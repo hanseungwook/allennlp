@@ -433,6 +433,7 @@ class Trainer(TrainerBase):
 
         return val_loss, batches_this_epoch
 
+    # TODO: Modify train in order to check the em score at each epoch and save the model if necessary
     def train(self) -> Dict[str, Any]:
         """
         Trains the supplied model with the supplied parameters.
@@ -519,6 +520,8 @@ class Trainer(TrainerBase):
             if self._momentum_scheduler:
                 self._momentum_scheduler.step(this_epoch_val_metric, epoch)
 
+            # TODO: Save model here by comparing metrics['em'] in each epoch
+            
             self._save_checkpoint(epoch)
 
             epoch_elapsed_time = time.time() - epoch_start_time
