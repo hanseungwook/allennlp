@@ -52,11 +52,14 @@ model = Model.load(config.duplicate(),
                    serialization_dir = args.serialization_dir,
                    cuda_device = cuda_device)
 
+# Printing model's children
+# for module in model.children():
+#     print(type(module))
+#     print(module)
 
-
-for module in model.children():
-    print(type(module))
-    print(module)
+# Attaching hook to last layer
+modules_list = list(model.children())
+modules_list[-2].register_forward_hook(ll_hook)
 
 dataset_reader_params = config["dataset_reader"]
 dataset_reader = DatasetReader.from_params(dataset_reader_params)
