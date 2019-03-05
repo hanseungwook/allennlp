@@ -20,8 +20,8 @@
       }
     }
   },
-  "train_data_path": "/Users/seungwookhan/Documents/Columbia/Senior/CML Research/Squad_Datasets/dataset_train_q.json",
-  "validation_data_path": "https://s3-us-west-2.amazonaws.com/allennlp/datasets/squad/squad-dev-v1.1.json",
+  "train_data_path": "/home/seungwookhan/squad_datasets/dataset_train_q.json",
+  "validation_data_path": "/home/seungwookhan/squad_datasets/dataset_val_q.json",
   "model": {
     "type": "bidaf",
     "text_field_embedder": {
