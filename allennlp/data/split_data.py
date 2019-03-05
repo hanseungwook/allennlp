@@ -20,7 +20,24 @@ def count_paragraphs(file_path):
 
         return total_num_paragraphs
 
-def split_data(file_path):
+def count_qs(file_path):
+    with open(file_path) as dataset_file:
+        dataset_json = json.load(dataset_file)
+        dataset = dataset_json['data']
+
+        logger.info("Reading and counting examples the dataset")
+
+        total_num_qs = 0
+
+        for article in dataset:
+            for paragraph_json in article['paragraphs']:    
+                cur_num_qs = len(paragraph_json['qas'])
+                total_num_qs += cur_num_qs
+
+        return total_num_qs
+
+
+def split_data_by_par(file_path, split_ratio):
     with open(file_path) as dataset_file:
         dataset_json = json.load(dataset_file)
         dataset = dataset_json['data']
@@ -33,7 +50,7 @@ def split_data(file_path):
 
         # Generating random numbers for extraction
         num_par = count_paragraphs(file_path)
-        num_par_val = int(np.floor(num_par * 0.2))
+        num_par_val = int(np.floor(num_par * split_ratio))
         
         val_par_indices = np.random.choice(num_par, num_par_val, replace=False)
 
@@ -90,13 +107,70 @@ def split_data(file_path):
 
         return dataset_train, dataset_val
 
+# TODO: Split data by using # of questions
+def split_data_by_q(file_path, split_ratio):
+    with open(file_path) as dataset_file:
+        dataset_json = json.load(dataset_file)
+        dataset = dataset_json['data']
+
+        logger.info("Reading and splitting the dataset")
+
+        # Creating new json objects
+        dataset_val = { "data" : [] }
+         
+        total_q = count_qs(file_path)
+        val_q = int(np.floor(total_q * split_ratio))
+        cur_q = 0
+
+        while cur_q < val_q:
+            val_dict = {}
+
+            rand_title_ind = np.random.randint(len(dataset), size=1)[0]
+
+            article = dataset[rand_title_ind]
+            title = article['title']
+            paragraphs_list = article['paragraphs']
+            
+            rand_par_ind = np.random.randint(len(paragraphs_list), size=1)[0]
+            
+            cur_q += len(paragraphs_list[rand_par_ind]['qas'])
+            val_dict['title'] = title
+
+            if (len(paragraphs_list) <= 1):
+                dataset.pop(rand_title_ind)
+    
+                val_dict['paragraphs'] = paragraphs_list
+            else:
+                paragraph = paragraphs_list.pop(rand_par_ind)
+                
+                val_dict['paragraphs'] = [paragraph]
+            
+            dataset_val['data'].append(val_dict)
+
+        # Save train and val datasets
+        with open('dataset_train_q.json', 'w') as split_train:
+            logger.info("Saving train dataset")
+            dataset_train = {'data' : dataset}
+            json.dump(dataset_train, split_train)
+        
+        with open('dataset_val_q.json', 'w') as split_val:
+            logger.info("Saving validation dataset")
+            json.dump(dataset_val, split_val)
+
+        return dataset, dataset_val
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("dataset_filepath")
     args = parser.parse_args()
 
-    num_paragraphs = count_paragraphs(args.dataset_filepath)
-    print(num_paragraphs)
-    #dataset_train, dataset_val = split_data(args.dataset_filepath)
+    # num_paragraphs = count_paragraphs(args.dataset_filepath)
+    # print(num_paragraphs)
+    # dataset_train, dataset_val = split_data_by_par(args.dataset_filepath, 0.2)
+    # num_qs = count_qs(args.dataset_filepath)
+    # print(num_qs)
+    dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, 0.2)
 
+    print(count_qs('./dataset_train_q.json'))
+    print(count_qs('./dataset_val_q.json'))
     
