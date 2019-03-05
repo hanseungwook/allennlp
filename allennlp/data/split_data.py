@@ -169,8 +169,11 @@ if __name__ == "__main__":
     # dataset_train, dataset_val = split_data_by_par(args.dataset_filepath, 0.2)
     # num_qs = count_qs(args.dataset_filepath)
     # print(num_qs)
-    dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, 0.2)
 
+    # Split data by questions
+    # dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, 0.2)
+
+    dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, 0.5)
     print(count_qs('./dataset_train_q.json'))
     print(count_qs('./dataset_val_q.json'))
     
