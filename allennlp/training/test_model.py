@@ -11,6 +11,7 @@ from allennlp.predictors import Predictor
 from allennlp.data import DatasetReader
 from allennlp.data.dataset import Batch
 from allennlp.training.metrics import CategoricalAccuracy
+from progressbar import ProgressBar
 
 import IPython
 
@@ -121,16 +122,43 @@ if __name__ == "__main__":
     layer_list[-4].register_forward_hook(model_layer_hook)
 
     # Set model to evaluation mode
-    model.eval()    
+    model.eval()
 
     val_dataset = dataset_reader.read(args.val_filepath)
     
     count = 0
     with torch.no_grad():
         outputs = []
+        correct_outputs = []
+        correct_start_outputs = []
+        correct_end_outputs = []
+        incorrect_outputs = []
 
+        # Only correct and incorrect for last layers b/c start and end are separated
+        correct_ll_start_outputs = []
+        incorrect_ll_start_outputs = []
 
-        for instance in val_dataset:
+        correct_ll_end_outputs = []
+        incorrect_ll_end_outputs = []
+
+        correct_model_layer_inputs = []
+        correct_start_model_layer_inputs = []
+        correct_end_model_layer_inputs = []
+        incorrect_model_layer_inputs = []
+
+        correct_model_layer_outputs = []
+        correct_start_model_layer_outputs = []
+        correct_end_model_layer_outputs = []
+        incorrect_model_layer_outputs = []
+
+        correct_inputs = []
+        correct_start_inputs = []
+        correct_end_inputs = []
+        incorrect_inputs = []
+
+        pbar = ProgressBar()
+        
+        for instance in pbar(val_dataset):
             # Create batch and index instance
             instance_list = [instance]
             dataset = Batch(instance_list)
@@ -144,9 +172,80 @@ if __name__ == "__main__":
             span_start_acc = metrics['span_start_acc']
             span_end_acc = metrics['span_end_acc']
 
+            # Save outputs
+            outputs.append(model_outputs)
+
+            # Save in 4 categories/folders
+            if span_start_acc and span_end_acc:
+                correct_outputs.append(model_outputs)
+                correct_inputs.append(model_input)
+                correct_ll_start_outputs.append(ll_start_output[0])
+                correct_ll_end_outputs.append(ll_end_output[0])
+                correct_model_layer_inputs.append(model_layer_input[0])
+                correct_model_layer_outputs.append(model_layer_output[0])
             
+            elif span_start_acc and not span_end_acc:
+                correct_start_outputs.append(model_outputs)
+                correct_start_inputs.append(model_input)
+                correct_ll_start_outputs.append(ll_start_output[0])
+                incorrect_ll_end_outputs.append(ll_end_output[0])
+                correct_start_model_layer_inputs.append(model_layer_input[0])
+                correct_start_model_layer_outputs.append(model_layer_output[0])
+
+            elif not span_start_acc and span_end_acc:
+                correct_end_outputs.append(model_outputs)
+                correct_end_inputs.append(model_input)
+                incorrect_ll_start_outputs.append(ll_start_output[0])
+                correct_ll_end_outputs.append(ll_end_output[0])
+                correct_end_model_layer_inputs.append(model_layer_input[0])
+                correct_end_model_layer_outputs.append(model_layer_output[0])
             
+            else:
+                incorrect_outputs.append(model_outputs)
+                incorrect_inputs.append(model_input)
+                incorrect_ll_start_outputs.append(ll_start_output[0])
+                incorrect_ll_end_outputs.append(ll_end_output[0])
+                incorrect_model_layer_inputs.append(model_layer_input[0])
+                incorrect_model_layer_outputs.append(model_layer_output[0])
+
+            ll_start_output.clear()
+            ll_end_output.clear()
+            model_layer_input.clear()
+            model_layer_output.clear()
+
             IPython.embed()
+        
+        print('Correct: {}, Start Correct: {}, End Correct: {}, Incorrect: {}\n'.format(
+              len(correct_outputs), len(correct_start_outputs), len(correct_end_outputs), 
+              len(incorrect_outputs)))
+        
+        # Saving all the intermediate/final inputs/outputs
+        torch.save(outputs, 'outputs.torch')
+        torch.save(correct_outputs, 'correct_outputs.torch')
+        torch.save(correct_start_outputs, 'correct_start_outputs.torch')
+        torch.save(correct_end_outputs, 'correct_end_outputs.torch')
+        torch.save(incorrect_outputs, 'incorrect_outputs.torch')
+
+        torch.save(correct_inputs, 'correct_inputs.torch')
+        torch.save(correct_start_inputs, 'correct_start_inputs.torch')
+        torch.save(correct_end_inputs, 'correct_end_inputs.torch')
+        torch.save(incorrect_inputs, 'incorrect_inputs.torch')
+
+        torch.save(correct_ll_start_outputs, 'correct_ll_start_outputs.torch')
+        torch.save(incorrect_ll_start_outputs, 'incorrect_ll_start_outputs.torch')
+
+        torch.save(correct_ll_end_outputs, 'correct_ll_start_outputs.torch')
+        torch.save(incorrect_ll_end_outputs, 'incorrect_ll_start_outputs.torch')
+        
+        torch.save(correct_model_layer_inputs, 'correct_model_layer_inputs.torch')
+        torch.save(correct_start_model_layer_inputs, 'correct_start_model_layer_inputs.torch')
+        torch.save(correct_end_model_layer_inputs, 'correct_end_model_layer_inputs.torch')
+        torch.save(incorrect_model_layer_inputs, 'incorrect_model_layer_inputs.torch')
+
+        torch.save(correct_model_layer_outputs, 'correct_model_layer_outputs.torch')
+        torch.save(correct_start_model_layer_outputs, 'correct_start_model_layer_outputs.torch')
+        torch.save(correct_end_model_layer_outputs, 'correct_end_model_layer_outputs.torch')
+        torch.save(incorrect_model_layer_outputs, 'incorrect_model_layer_outputs.torch')
 
 
     
