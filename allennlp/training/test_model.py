@@ -70,6 +70,7 @@ def load_model(serialization_dir):
     config = Params.from_file(os.path.join(serialization_dir, CONFIG_NAME))
     config.loading_from_archive = True
     cuda_device = int(config['trainer']['cuda_device'])
+    cuda_device = -1
     model = Model.load(config.duplicate(),
                     weights_file = args.weights_file,
                     serialization_dir = args.serialization_dir,
@@ -213,8 +214,6 @@ if __name__ == "__main__":
             model_layer_input.clear()
             model_layer_output.clear()
 
-            IPython.embed()
-        
         print('Correct: {}, Start Correct: {}, End Correct: {}, Incorrect: {}\n'.format(
               len(correct_outputs), len(correct_start_outputs), len(correct_end_outputs), 
               len(incorrect_outputs)))
