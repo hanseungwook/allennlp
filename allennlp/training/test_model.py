@@ -125,6 +125,15 @@ if __name__ == "__main__":
     model.eval()
 
     val_dataset = dataset_reader.read(args.val_filepath)
+
+    # Creating directory for outputs 
+    dir_name = 'outputs'
+    try:
+        os.mkdir(dir_name)
+        logger.info("Created directory for outputs")
+    except:
+        logger.info("Directory for outputs already exists")
+
     
     count = 0
     with torch.no_grad():
@@ -220,32 +229,32 @@ if __name__ == "__main__":
               len(incorrect_outputs)))
         
         # Saving all the intermediate/final inputs/outputs
-        torch.save(outputs, 'outputs.torch')
-        torch.save(correct_outputs, 'correct_outputs.torch')
-        torch.save(correct_start_outputs, 'correct_start_outputs.torch')
-        torch.save(correct_end_outputs, 'correct_end_outputs.torch')
-        torch.save(incorrect_outputs, 'incorrect_outputs.torch')
+        torch.save(outputs, os.path.join(dir_name, 'outputs.torch'))
+        torch.save(correct_outputs, os.path.join(dir_name, 'correct_outputs.torch'))
+        torch.save(correct_start_outputs, os.path.join(dir_name, 'correct_start_outputs.torch'))
+        torch.save(correct_end_outputs, os.path.join(dir_name, 'correct_end_outputs.torch'))
+        torch.save(incorrect_outputs, os.path.join(dir_name, 'incorrect_outputs.torch'))
 
-        torch.save(correct_inputs, 'correct_inputs.torch')
-        torch.save(correct_start_inputs, 'correct_start_inputs.torch')
-        torch.save(correct_end_inputs, 'correct_end_inputs.torch')
-        torch.save(incorrect_inputs, 'incorrect_inputs.torch')
+        torch.save(correct_inputs, os.path.join(dir_name, 'correct_inputs.torch'))
+        torch.save(correct_start_inputs, os.path.join(dir_name, 'correct_start_inputs.torch'))
+        torch.save(correct_end_inputs, os.path.join(dir_name, 'correct_end_inputs.torch'))
+        torch.save(incorrect_inputs, os.path.join(dir_name, 'incorrect_inputs.torch'))
 
-        torch.save(correct_ll_start_outputs, 'correct_ll_start_outputs.torch')
-        torch.save(incorrect_ll_start_outputs, 'incorrect_ll_start_outputs.torch')
+        torch.save(correct_ll_start_outputs, os.path.join(dir_name, 'correct_ll_start_outputs.torch'))
+        torch.save(incorrect_ll_start_outputs, os.path.join(dir_name, 'incorrect_ll_start_outputs.torch'))
 
-        torch.save(correct_ll_end_outputs, 'correct_ll_start_outputs.torch')
-        torch.save(incorrect_ll_end_outputs, 'incorrect_ll_start_outputs.torch')
+        torch.save(correct_ll_end_outputs, os.path.join(dir_name, 'correct_ll_start_outputs.torch'))
+        torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, 'incorrect_ll_start_outputs.torch'))
         
-        torch.save(correct_model_layer_inputs, 'correct_model_layer_inputs.torch')
-        torch.save(correct_start_model_layer_inputs, 'correct_start_model_layer_inputs.torch')
-        torch.save(correct_end_model_layer_inputs, 'correct_end_model_layer_inputs.torch')
-        torch.save(incorrect_model_layer_inputs, 'incorrect_model_layer_inputs.torch')
+        torch.save(correct_model_layer_inputs, os.path.join(dir_name, 'correct_model_layer_inputs.torch'))
+        torch.save(correct_start_model_layer_inputs, os.path.join(dir_name, 'correct_start_model_layer_inputs.torch'))
+        torch.save(correct_end_model_layer_inputs, os.path.join(dir_name, 'correct_end_model_layer_inputs.torch'))
+        torch.save(incorrect_model_layer_inputs, os.path.join(dir_name, 'incorrect_model_layer_inputs.torch'))
 
-        torch.save(correct_model_layer_outputs, 'correct_model_layer_outputs.torch')
-        torch.save(correct_start_model_layer_outputs, 'correct_start_model_layer_outputs.torch')
-        torch.save(correct_end_model_layer_outputs, 'correct_end_model_layer_outputs.torch')
-        torch.save(incorrect_model_layer_outputs, 'incorrect_model_layer_outputs.torch')
+        torch.save(correct_model_layer_outputs, os.path.join(dir_name, 'correct_model_layer_outputs.torch'))
+        torch.save(correct_start_model_layer_outputs, os.path.join(dir_name, 'correct_start_model_layer_outputs.torch'))
+        torch.save(correct_end_model_layer_outputs, os.path.join(dir_name, 'correct_end_model_layer_outputs.torch'))
+        torch.save(incorrect_model_layer_outputs, os.path.join(dir_name, 'incorrect_model_layer_outputs.torch'))
 
 
     
