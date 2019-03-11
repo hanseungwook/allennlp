@@ -108,6 +108,7 @@ if __name__ == "__main__":
     parser.add_argument("weights_file")
     parser.add_argument("serialization_dir")
     parser.add_argument("val_filepath")
+    parser.add_argument("output_dir")
     args = parser.parse_args()
 
     # Load model and dataset reader
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     val_dataset = dataset_reader.read(args.val_filepath)
 
     # Creating directory for outputs 
-    dir_name = 'outputs'
+    dir_name = args.output_dir
     try:
         os.mkdir(dir_name)
         logger.info("Created directory for outputs")
