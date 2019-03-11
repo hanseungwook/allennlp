@@ -243,8 +243,8 @@ if __name__ == "__main__":
         torch.save(correct_ll_start_outputs, os.path.join(dir_name, 'correct_ll_start_outputs.torch'))
         torch.save(incorrect_ll_start_outputs, os.path.join(dir_name, 'incorrect_ll_start_outputs.torch'))
 
-        torch.save(correct_ll_end_outputs, os.path.join(dir_name, 'correct_ll_start_outputs.torch'))
-        torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, 'incorrect_ll_start_outputs.torch'))
+        torch.save(correct_ll_end_outputs, os.path.join(dir_name, 'correct_ll_end_outputs.torch'))
+        torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, 'incorrect_ll_end_outputs.torch'))
         
         torch.save(correct_model_layer_inputs, os.path.join(dir_name, 'correct_model_layer_inputs.torch'))
         torch.save(correct_start_model_layer_inputs, os.path.join(dir_name, 'correct_start_model_layer_inputs.torch'))
