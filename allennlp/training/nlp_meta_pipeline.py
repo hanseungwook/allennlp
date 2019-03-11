@@ -101,7 +101,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             loaded = torch.load(correct_start_files[0])
             all_indices = list(range(len(loaded)))
             selected_indices_correct_start = np.random.choice(all_indices, size=int(percentage * len(loaded)), replace = False)
-            self.correct_start = len(loaded)
+            self.correct_start_len = len(loaded)
 
         for layer_index in range(len(correct_start_files)):
             loaded = torch.load(correct_start_files[layer_index])
@@ -113,7 +113,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             loaded = torch.load(correct_end_files[0])
             all_indices = list(range(len(loaded)))
             selected_indices_correct_end = np.random.choice(all_indices, size=int(percentage * len(loaded)), replace = False)
-            self.correct_end = len(loaded)
+            self.correct_end_len = len(loaded)
 
         for layer_index in range(len(correct_end_files)):
             loaded = torch.load(correct_end_files[layer_index])
@@ -125,14 +125,15 @@ class IntermediateLayersInMemoryDataset(Dataset):
             loaded = torch.load(incorrect_files[0])
             all_indices = list(range(len(loaded)))
             selected_indices_incorrect = np.random.choice(all_indices, size=int(percentage * len(loaded)), replace = False)
-            num_incorrect = len(loaded)
+            self.incorrect_len = len(loaded)
 
         for layer_index in range(len(incorrect_files)):
             loaded = torch.load(incorrect_files[layer_index])
             for item_idx in selected_indices_incorrect:
                 self.X_data[layer_index].append(loaded[item_idx])
 
-        self.dim_size = self.X_data[0][0].shape[0]
+        #IPython.embed()
+        self.dim_size = self.X_data[0][0][0].shape[1]
         self.total_len = self.correct_len + self.correct_start_len + \
                          self.correct_end_len + self.incorrect_len
 
@@ -141,7 +142,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         self.Y_data = np.zeros((self.total_len))
         self.Y_data[0:self.correct_len] = 1
 
-        print('Total: {}, Correct: {}, Start Correct: {}, End Correct: {}, Incorrect: {}, Percentage of Incorrect {.2f}\n'.format(
+        print('Total: {}, Correct: {}, Start Correct: {}, End Correct: {}, Incorrect: {}, Percentage of Incorrect: {}\n'.format(
               self.total_len, self.correct_len, self.correct_start_len, self.correct_end_len, self.incorrect_len,
               (self.incorrect_len / self.total_len)))
 
