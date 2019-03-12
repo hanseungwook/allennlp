@@ -443,9 +443,9 @@ def main():
                         help='random seed (default: 10027)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
-    parser.add_argument('--meta_batch_size', type=int, default=50, metavar='MBS',
+    parser.add_argument('--meta_batch_size', type=int, default=1, metavar='MBS',
                         help='size of batches to the meta classifier')
-    parser.add_argument('--meta_train_num_epochs', type=int, default=1, metavar='metatrainepochs',
+    parser.add_argument('--meta_train_num_epochs', type=int, default=50, metavar='metatrainepochs',
                         help='size of batches to the meta classifier')
     parser.add_argument('--load_meta_model_from_saved_state', default="")
 
