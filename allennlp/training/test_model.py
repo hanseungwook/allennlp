@@ -146,9 +146,13 @@ if __name__ == "__main__":
 
         # Only correct and incorrect for last layers b/c start and end are separated
         correct_ll_start_outputs = []
+        correct_start_ll_start_outputs = []
+        correct_end_ll_start_outputs = []
         incorrect_ll_start_outputs = []
 
         correct_ll_end_outputs = []
+        correct_start_ll_end_outputs = []
+        correct_end_ll_end_outputs = []
         incorrect_ll_end_outputs = []
 
         correct_model_layer_inputs = []
@@ -197,16 +201,16 @@ if __name__ == "__main__":
             elif span_start_acc and not span_end_acc:
                 correct_start_outputs.append(model_outputs)
                 correct_start_inputs.append(model_input)
-                correct_ll_start_outputs.append(ll_start_output[0])
-                incorrect_ll_end_outputs.append(ll_end_output[0])
+                correct_start_ll_start_outputs.append(ll_start_output[0])
+                correct_start_ll_end_outputs.append(ll_end_output[0])
                 correct_start_model_layer_inputs.append(model_layer_input[0])
                 correct_start_model_layer_outputs.append(model_layer_output[0])
 
             elif not span_start_acc and span_end_acc:
                 correct_end_outputs.append(model_outputs)
                 correct_end_inputs.append(model_input)
-                incorrect_ll_start_outputs.append(ll_start_output[0])
-                correct_ll_end_outputs.append(ll_end_output[0])
+                correct_end_ll_start_outputs.append(ll_start_output[0])
+                correct_end_ll_end_outputs.append(ll_end_output[0])
                 correct_end_model_layer_inputs.append(model_layer_input[0])
                 correct_end_model_layer_outputs.append(model_layer_output[0])
             
@@ -240,9 +244,13 @@ if __name__ == "__main__":
         torch.save(incorrect_inputs, os.path.join(dir_name, 'incorrect_inputs.torch'))
 
         torch.save(correct_ll_start_outputs, os.path.join(dir_name, 'correct_ll_start_outputs.torch'))
+        torch.save(correct_start_ll_start_outputs, os.path.join(dir_name, 'correct_start_ll_start_outputs.torch'))
+        torch.save(correct_end_ll_start_outputs, os.path.join(dir_name, 'correct_end_ll_start_outputs.torch'))
         torch.save(incorrect_ll_start_outputs, os.path.join(dir_name, 'incorrect_ll_start_outputs.torch'))
 
         torch.save(correct_ll_end_outputs, os.path.join(dir_name, 'correct_ll_end_outputs.torch'))
+        torch.save(correct_start_ll_end_outputs, os.path.join(dir_name, 'correct_start_ll_end_outputs.torch'))
+        torch.save(correct_end_ll_end_outputs, os.path.join(dir_name, 'correct_end_ll_end_outputs.torch'))
         torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, 'incorrect_ll_end_outputs.torch'))
         
         torch.save(correct_model_layer_inputs, os.path.join(dir_name, 'correct_model_layer_inputs.torch'))
