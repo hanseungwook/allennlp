@@ -20,10 +20,10 @@ import IPython
 
 
 ### GLOBAL PARAMETERS
-CUDA_DEVICE = 'cuda:0'
+CUDA_DEVICE = 'cuda:1'
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['model_layer_inputs.torch']
+LAYER_NAMES = ['model_layer_outputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -175,7 +175,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         Xs_to_return = []
 
         for layer in range(len(self.X_data)):
-            Xs_to_return.append(self.X_data[layer][idx].float().to(CUDA_DEVICE))
+            Xs_to_return.append(self.X_data[layer][idx].float())
         
         Xs_to_return = (Xs_to_return[0])
 
@@ -242,7 +242,11 @@ def process_layer_data(data, layer_no):
     processed_data = data
     if len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_inputs.torch':
         if layer_no == 0:
-            processed_data = data[0]
+            processed_data = data[0].reshape(data[0].shape[0] * data[0].shape[1] * data[0].shape[2])
+    
+    elif len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_outputs.torch':
+        if layer_no == 0:
+            processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])
 
     elif len(LAYER_NAMES) == 2:
         if layer_no == 0 or layer_no == 1:

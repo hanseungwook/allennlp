@@ -67,7 +67,7 @@ def train_meta(model, device, train_loader, optimizer, epoch):
         # data[0] = data[0].to(device)
         # torch.cat(data, out=inputs)
             
-        data[0] = data[0].to(device)
+        data = data.to(device)
         target = target.to(device)
         optimizer.zero_grad()
         output = model(data)
@@ -105,7 +105,7 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
             # data[0] = data[0].to(device)
             # torch.cat(data, out=inputs)
             
-            data[0] = data[0].to(device)
+            data = data.to(device)
 
             target = target.to(device)
             output = model(data)
@@ -129,7 +129,7 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
             # inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
             # data[0] = data[0].to(device)
             # torch.cat(data, out=inputs)
-            data[0] = data[0].to(device)
+            data = data.to(device)
 
             target = target.to(device)
             output = model(data)
