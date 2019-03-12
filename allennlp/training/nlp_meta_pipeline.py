@@ -240,7 +240,11 @@ class IntermediateLayersInMemoryDataset(Dataset):
 # Processes the data (tensor) of the layer to reshape and etc given the layer number
 def process_layer_data(data, layer_no):
     processed_data = data
-    if len(LAYER_NAMES) == 2:
+    if len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_inputs.torch':
+        if layer_no == 0:
+            processed_data = data[0]
+
+    elif len(LAYER_NAMES) == 2:
         if layer_no == 0 or layer_no == 1:
             processed_data = data.view(data.shape[1])
 
