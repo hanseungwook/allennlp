@@ -25,32 +25,32 @@ class FCMetaNet(nn.Module):
         self.bn6 = nn.BatchNorm1d(64)
 
         self.fc7 = nn.Linear(64, 2)
+        self._relu = nn.ReLU()
+        self._dropout = nn.Dropout()
 
 
     def forward(self, x):
-
-        x = F.relu(self.fc1(x))
+        x = self._relu(self.fc1(x))
         x = self.bn1(x)
-
         #x = F.dropout(x, training=self.training)
-        x = F.relu(self.fc2(x))
+        x = self._relu(self.fc2(x))
         x = self.bn2(x)
 
-        x = F.dropout(x, training=self.training)
+        x = self._dropout(x)
 
-        x = F.relu(self.fc3(x))
+        x = self._relu(self.fc3(x))
         x = self.bn3(x)
 
         #x = F.dropout(x, training=self.training)
-        x = F.relu(self.fc4(x))
+        x = self._relu(self.fc4(x))
         x = self.bn4(x)
-        x = F.dropout(x, training=self.training)
+        x = self._dropout(x)
 
-        x = F.relu(self.fc5(x))
+        x = self._relu(self.fc5(x))
         x = self.bn5(x)
         #x = F.dropout(x, training=self.training)
 
-        x = F.relu(self.fc6(x))
+        x = self._relu(self.fc6(x))
         x = self.bn6(x)
 
         x = self.fc7(x)
@@ -62,12 +62,14 @@ def train_meta(model, device, train_loader, optimizer, epoch):
     correct = 0
 
     for batch_idx, (data, target) in enumerate(train_loader):
-        IPython.embed()
+        #IPython.embed()
         #only need to put tensors in position 0 onto device (?)
+        inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
         data[0] = data[0].to(device)
+        torch.cat(data, out=inputs)
         target = target.to(device)
         optimizer.zero_grad()
-        output = model(data)
+        output = model(inputs)
         criterion = nn.CrossEntropyLoss()
         loss = criterion(output, target)
         loss.backward()
