@@ -15,7 +15,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-#from full_mnist_pipeline import train_meta
 from meta_model import FCMetaNet, train_meta, test_meta_model
 import IPython
 
@@ -330,6 +329,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     torch.cuda.manual_seed(args.seed)
 
     LOGGER.info('Setting up meta network')
+
     # Setting up meta model
     size_of_first_layer = train_dataset.get_size()
     meta_model=FCMetaNet(size_of_first_layer).to(device)
@@ -356,7 +356,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     for epoch in range(1,args.meta_train_num_epochs+1):
         train_acc = train_meta(meta_model, device, train_loader, meta_optimizer, epoch)
 
-        # correct_acc, error_acc = test_meta_model(meta_model, device, error_validation_loader, correct_validation_loader, meta_optimizer, epoch)
+        # correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_validation_loader, correct_validation_loader, meta_optimizer, epoch)
         # total_acc = error_acc + correct_acc
         # total_geo_acc = np.sqrt(error_acc * correct_acc)
         # total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
