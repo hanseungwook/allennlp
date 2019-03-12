@@ -22,7 +22,8 @@ import IPython
 ### GLOBAL PARAMETERS
 CUDA_DEVICE = 'cuda:0'
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
+#LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
+LAYER_NAMES = ['model_layer_inputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -291,14 +292,21 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     LOGGER.info('Finished creating training and validation datasets')
 
-    # Creating padding and concatenation of layer data
+    # Creating padding and concatenation of layer data for last layer outputs
     LOGGER.info('Creating padding and concatenation')
-    layer_idx_list = [0, 1] # For span_start and span_end last layers
+    # layer_idx_list = [0, 1] # For span_start and span_end last layers
+    # max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
+    #               valid_incorrect_dataset.calc_max_dim(layer_idx_list))
+    # train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    # valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    # valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+
+    layer_idx_list = [0] # For model_input layer
     max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
                   valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-    train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
-    valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
-    valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
+    valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
+    valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
 
     # Get counts and make weights for balancing training samples
     correct_count = train_dataset.get_correct_len()
