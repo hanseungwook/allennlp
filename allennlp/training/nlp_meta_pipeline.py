@@ -342,11 +342,12 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     try:
         os.mkdir(args.results_dir)
-        logger.info("Created directory for outputs")
-        accuracies_file_name = os.path.join(results_dir+sys.argv[0]+'_accuracies_record.txt')
+        LOGGER.info("Created directory for outputs")
+        accuracies_file_name = os.path.join(args.results_dir+sys.argv[0]+'_accuracies_record.txt')
         accuracies_file = open(accuracies_file_name, "w+")
     except:
-        logger.error('ERROR: Could not create results directory')
+        LOGGER.error('ERROR: Could not create results directory')
+        raise Exception('Could not create results directory')
 
 
     meta_optimizer = optim.Adam(meta_model.parameters(),lr=.00001)
@@ -364,9 +365,10 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     best_total_diff_adj_geo_acc_error = 0
 
     for epoch in range(1,args.meta_train_num_epochs+1):
+        LOGGER.info('Starting epoch {}'.format(epoch))
         train_acc = train_meta(meta_model, device, train_loader, meta_optimizer, epoch)
 
-        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_validation_loader, correct_validation_loader, meta_optimizer, epoch)
+        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
         total_acc = error_acc + correct_acc
         total_geo_acc = np.sqrt(error_acc * correct_acc)
         total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
@@ -411,6 +413,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     # test_correct_acc, test_error_acc = test_meta_model(meta_model, device,error_test_loader, correct_test_loader, meta_optimizer,epoch)
     accuracies_file.close()
 
+    LOGGER.info('Finished epoch {}'.format(epoch))
     return best_total_diff_adj_geo_acc_correct, best_total_diff_adj_geo_acc_error
     
 
