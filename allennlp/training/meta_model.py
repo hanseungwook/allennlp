@@ -80,7 +80,7 @@ def train_meta(model, device, train_loader, optimizer, epoch):
 
         if batch_idx % 50 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * data[0].shape[0], len(train_loader.dataset),
+                epoch, batch_idx * data.shape[0], len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
     
     print('percentage correct:')
@@ -126,12 +126,13 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
 
         for batch_idx, (data, target) in enumerate(error_test_loader):
             #only need to put tensors in position 0 onto device (?)
-            inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+            # inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+            # data[0] = data[0].to(device)
+            # torch.cat(data, out=inputs)
             data[0] = data[0].to(device)
-            torch.cat(data, out=inputs)
 
             target = target.to(device)
-            output = model(inputs)
+            output = model(data)
             criterion = nn.CrossEntropyLoss()
             test_loss += criterion(output, target)
             pred = output.max(1, keepdim=True)[1]
