@@ -20,7 +20,7 @@ import IPython
 
 
 ### GLOBAL PARAMETERS
-CUDA_DEVICE = 'cpu'
+CUDA_DEVICE = 'cuda:0'
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
 LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
 CORRECT = 'correct_'
@@ -175,6 +175,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         for layer in range(len(self.X_data)):
             Xs_to_return.append(self.X_data[layer][idx].float().to(CUDA_DEVICE))
+        
+        Xs_to_return = (Xs_to_return[0])
 
         if self.Y_data[idx] == 1:
             self.correct_running_count += 1

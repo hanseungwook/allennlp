@@ -63,12 +63,14 @@ def train_meta(model, device, train_loader, optimizer, epoch):
 
     for batch_idx, (data, target) in enumerate(train_loader):
         #only need to put tensors in position 0 onto device (?)
-        inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+        # inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+        # data[0] = data[0].to(device)
+        # torch.cat(data, out=inputs)
+            
         data[0] = data[0].to(device)
-        torch.cat(data, out=inputs)
         target = target.to(device)
         optimizer.zero_grad()
-        output = model(inputs)
+        output = model(data)
         criterion = nn.CrossEntropyLoss()
         loss = criterion(output, target)
         loss.backward()
@@ -99,12 +101,14 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
 
         for batch_idx, (data, target) in enumerate(correct_test_loader):
             #only need to put tensors in position 0 onto device (?)
-            inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+            # inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+            # data[0] = data[0].to(device)
+            # torch.cat(data, out=inputs)
+            
             data[0] = data[0].to(device)
-            torch.cat(data, out=inputs)
-            #IPython.embed()
+
             target = target.to(device)
-            output = model(inputs)
+            output = model(data)
             criterion = nn.CrossEntropyLoss()
             test_loss += criterion(output, target)
             pred = output.max(1, keepdim=True)[1]
