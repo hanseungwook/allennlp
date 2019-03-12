@@ -133,7 +133,7 @@ if __name__ == "__main__":
         os.mkdir(dir_name)
         logger.info("Created directory for outputs")
     except:
-        logger.info("Directory for outputs already exists")
+        logger.error("ERROR: Could not create outputs directory")
 
     
     count = 0
