@@ -29,6 +29,7 @@ CORRECT_START = 'correct_start_'
 CORRECT_END = 'correct_end_'
 INPUTS = 'inputs.torch'
 
+
 # Setting up logger
 LOGGER = logging.getLogger(__name__)
 out_hdlr = logging.StreamHandler(sys.stdout)
@@ -250,7 +251,7 @@ def pad_layers(X_data, layer_idx):
         X_data[layer_idx][i] = padded
 
     return X_data
-  
+
 
 def make_and_train_meta_model(args, device, train_set_percentage):
     train_correct_files = []
@@ -339,6 +340,15 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         meta_saved_state = torch.load(args.load_meta_model_from_saved_state)
         meta_model.load_state_dict(meta_saved_state)
 
+    try:
+        os.mkdir(args.results_dir)
+        logger.info("Created directory for outputs")
+        accuracies_file_name = os.path.join(results_dir+sys.argv[0]+'_accuracies_record.txt')
+        accuracies_file = open(accuracies_file_name, "w+")
+    except:
+        logger.error('ERROR: Could not create results directory')
+
+
     meta_optimizer = optim.Adam(meta_model.parameters(),lr=.00001)
     scheduler = ReduceLROnPlateau(meta_optimizer, 'max', verbose=True)
 
@@ -356,42 +366,40 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     for epoch in range(1,args.meta_train_num_epochs+1):
         train_acc = train_meta(meta_model, device, train_loader, meta_optimizer, epoch)
 
-        # correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_validation_loader, correct_validation_loader, meta_optimizer, epoch)
-        # total_acc = error_acc + correct_acc
-        # total_geo_acc = np.sqrt(error_acc * correct_acc)
-        # total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
+        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_validation_loader, correct_validation_loader, meta_optimizer, epoch)
+        total_acc = error_acc + correct_acc
+        total_geo_acc = np.sqrt(error_acc * correct_acc)
+        total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
 
-        # #accuracies_file = open(accuracies_file_name, "a+")
-        # accuracies_file.write(str(epoch) + " " + str(train_acc) + " " + " " + str(correct_acc) + " " + str(error_acc)+ " " + str(total_acc) + " " +  str(total_geo_acc) + " " + str(total_diff_adj_geo_acc)+"\n")
-        # #accuracies_file.close()
+        accuracies_file.write(str(epoch) + " " + str(train_acc) + " " + " " + str(correct_acc) + " " + str(error_acc)+ " " + str(total_acc) + " " +  str(total_geo_acc) + " " + str(total_diff_adj_geo_acc)+"\n")
 
-        # if train_acc > best_train_acc:
-        #     best_train_acc = train_acc
+        if train_acc > best_train_acc:
+            best_train_acc = train_acc
 
-        # if total_acc > best_total_valid_value:
-        #     best_total_valid_value = total_acc
-        #     if epoch > 1:
-        #         os.remove(old_total_acc_file_name)
+        if total_acc > best_total_valid_value:
+            best_total_valid_value = total_acc
+            if epoch > 1:
+                os.remove(old_total_acc_file_name)
 
-        #     old_total_acc_file_name = results_folder+'_best_total_acc_valid_epoch_'+str(epoch)+'.pth'
-        #     torch.save(meta_model.state_dict(), old_total_acc_file_name)
+            old_total_acc_file_name = results_folder+'_best_total_acc_valid_epoch_'+str(epoch)+'.pth'
+            torch.save(meta_model.state_dict(), old_total_acc_file_name)
 
-        # if total_diff_adj_geo_acc > best_total_diff_adj_geo_acc:
-        #     best_total_diff_adj_geo_acc = total_diff_adj_geo_acc
-        #     best_total_diff_adj_geo_acc_correct = correct_acc
-        #     best_total_diff_adj_geo_acc_error = error_acc
+        if total_diff_adj_geo_acc > best_total_diff_adj_geo_acc:
+            best_total_diff_adj_geo_acc = total_diff_adj_geo_acc
+            best_total_diff_adj_geo_acc_correct = correct_acc
+            best_total_diff_adj_geo_acc_error = error_acc
 
-        #     if epoch > 1 and old_diff_adj_geo_acc_file_name_created == True:
-        #         os.remove(old_diff_adj_geo_acc_file_name)
+            if epoch > 1 and old_diff_adj_geo_acc_file_name_created == True:
+                os.remove(old_diff_adj_geo_acc_file_name)
 
-        #     old_diff_adj_geo_acc_file_name_created = True
-        #     old_diff_adj_geo_acc_file_name = results_folder + '_best_diff_adj_geo_acc_valid_epoch_' + str(epoch) + '.pth'
-        #     torch.save(meta_model.state_dict(), old_diff_adj_geo_acc_file_name)
+            old_diff_adj_geo_acc_file_name_created = True
+            old_diff_adj_geo_acc_file_name = results_folder + '_best_diff_adj_geo_acc_valid_epoch_' + str(epoch) + '.pth'
+            torch.save(meta_model.state_dict(), old_diff_adj_geo_acc_file_name)
 
         
-        # print("Geo dif adj valid mean acc: " + str(total_diff_adj_geo_acc))
+        print("Geo dif adj valid mean acc: " + str(total_diff_adj_geo_acc))
 
-        # scheduler.step(total_diff_adj_geo_acc)
+        scheduler.step(total_diff_adj_geo_acc)
 
 
     if old_diff_adj_geo_acc_file_name_created == True:
@@ -401,6 +409,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     #return meta_model, best_total_diff_adj_geo_acc
 
     # test_correct_acc, test_error_acc = test_meta_model(meta_model, device,error_test_loader, correct_test_loader, meta_optimizer,epoch)
+    accuracies_file.close()
 
     return best_total_diff_adj_geo_acc_correct, best_total_diff_adj_geo_acc_error
     
@@ -409,6 +418,7 @@ def main():
     parser = argparse.ArgumentParser(description='Meta NLP pipeline')
     parser.add_argument('--training_dir', help='Folder in which the meta training intermediate inputs/outputs are saved')
     parser.add_argument('--validation_dir', help='Folder in which the meta validation intermedaite inputs/outputs are saved')
+    parser.add_argument('--results_dir', default= './', help='Folder in which results will be saved')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',help='input batch size for testing (default: 1000)')
     parser.add_argument('--batch-size', type=int, default=100, metavar='N',
                         help='input batch size for testing (default: 1000)')
@@ -422,12 +432,13 @@ def main():
                         help='how many batches to wait before logging training status')
     parser.add_argument('--meta_batch_size', type=int, default=1, metavar='MBS',
                         help='size of batches to the meta classifier')
-    parser.add_argument('--meta_train_num_epochs', type=int, default=50, metavar='metatrainepochs',
+    parser.add_argument('--meta_train_num_epochs', type=int, default=1, metavar='metatrainepochs',
                         help='size of batches to the meta classifier')
     parser.add_argument('--load_meta_model_from_saved_state', default="")
 
     args = parser.parse_args()
     device = torch.device(CUDA_DEVICE)
+
     make_and_train_meta_model(args, device, 1)
 
 if __name__ == "__main__":

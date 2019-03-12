@@ -62,7 +62,6 @@ def train_meta(model, device, train_loader, optimizer, epoch):
     correct = 0
 
     for batch_idx, (data, target) in enumerate(train_loader):
-        #IPython.embed()
         #only need to put tensors in position 0 onto device (?)
         inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
         data[0] = data[0].to(device)
