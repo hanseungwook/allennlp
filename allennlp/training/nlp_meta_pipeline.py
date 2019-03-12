@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-from meta_model import FCMetaNet, train_meta, test_meta_model
+from meta_model import FCMetaNet, FCMetaNet1, train_meta, test_meta_model
 import IPython
 
 
@@ -175,7 +175,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         Xs_to_return = []
 
         for layer in range(len(self.X_data)):
-            Xs_to_return.append(self.X_data[layer][idx].float())
+            Xs_to_return.append(self.X_data[layer][idx].float().to())
         
         Xs_to_return = (Xs_to_return[0])
 
@@ -355,7 +355,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     # Setting up meta model
     size_of_first_layer = train_dataset.get_size()
-    meta_model=FCMetaNet(size_of_first_layer).to(device)
+    meta_model=FCMetaNet1(size_of_first_layer).to(device)
 
     # If saved state given, load into model
     if args.load_meta_model_from_saved_state:
