@@ -40,7 +40,8 @@ LOGGER.setLevel(logging.INFO)
 
 class IntermediateLayersInMemoryDataset(Dataset):
     def __init__(self, correct_files=None, correct_start_files=None, correct_end_files=None, 
-                 incorrect_files=None, input_files=None, percentage = 1.0, one_class = False, transform=None):
+                 incorrect_files=None, input_files=None, percentage = 1.0, one_class = False, 
+                 max_dim=0, transform=None):
         self.correct_running_count = 0
         self.correct_start_running_count = 0
         self.correct_end_running_count = 0
@@ -54,6 +55,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         self.X_data = []
         self.dim_size = 0
         self.data_class = None
+        self.max_dim = 0
 
         # Defining and setting up for respective class of dataset
         if not one_class:
@@ -147,13 +149,6 @@ class IntermediateLayersInMemoryDataset(Dataset):
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
                     self.X_data[layer_index].append(processed_data)
 
-        # Put padding onto the intermediate layer features
-        self.X_data = pad_layers(self.X_data, 0)
-        self.X_data = pad_layers(self.X_data, 1)
-
-        # If only span_start and span_end output layers given, then concatenate the tensors into 1
-        self.X_data = cat_outputs(self.X_data, [0, 1])
-
         # Defining dim_size for 1D vector
         self.dim_size = self.X_data[0][0].shape[0]
         self.total_len = self.correct_len + self.correct_start_len + \
@@ -188,6 +183,36 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         return (Xs_to_return, torch.tensor(self.Y_data[idx]).long())
 
+    def calc_max_dim(self, layer_idx_list):
+        for layer_idx in layer_idx_list:
+            dim_list = [item.shape[0] for item in self.X_data[layer_idx]]
+            self.max_dim = max(max(dim_list), self.max_dim)
+
+        return self.max_dim
+        
+    # Pad data at given layer indices with the maximum length of tensor in the dataset
+    def pad_concat_layers(self, pad_idx_list, cat_idx_list=None, max_dim=0):
+        for layer_idx in pad_idx_list:
+            for i in range(len(self.X_data[layer_idx])):
+                cur_item = self.X_data[layer_idx][i]
+                padded = torch.zeros(max_dim)
+                cur_dim = cur_item.shape[0]
+                padded[:cur_dim] = cur_item
+                self.X_data[layer_idx][i] = padded
+
+        # If concatenating layer indices given, then concat
+        if cat_idx_list:
+            cat1 = cat_idx_list[0]
+            cat2 = cat_idx_list[1]
+
+            for i in range(len(self.X_data[cat1])):
+                self.X_data[cat1][i] = torch.cat((self.X_data[cat1][i], self.X_data[cat2][i]), 0)
+
+            del self.X_data[cat2]
+        
+        # Set dim_size since new tensors have been created
+        self.dim_size = self.X_data[0][0].shape[0]
+
     def get_correct_len(self):
         return self.correct_len
 
@@ -205,7 +230,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
     def get_num_layers(self): 
         return self.X_data.shape()[0]
-    
+
     def get_size(self):
         return self.dim_size
 
@@ -225,33 +250,6 @@ def process_layer_data(data, layer_no):
             processed_data = data.view(data.shape[1])
 
     return processed_data
-
-def cat_outputs(X_data, cat_idx_list):
-
-    cat1 = cat_idx_list[0]
-    cat2 = cat_idx_list[1]
-
-    for i in range(len(X_data[cat1])):
-        X_data[cat1][i] = torch.cat((X_data[cat1][i], X_data[cat2][i]), 0)
-
-    del X_data[cat2]
-
-    return X_data
-
-# Pad data at given layer indices with the maximum length of tensor in the dataset
-def pad_layers(X_data, layer_idx):
-    dim_list = [item.shape[0] for item in X_data[layer_idx]]
-    max_dim = max(dim_list)
-
-    for i in range(len(X_data[layer_idx])):
-        cur_item = X_data[layer_idx][i]
-        padded = torch.zeros(max_dim)
-        cur_dim = cur_item.shape[0]
-        padded[:cur_dim] = cur_item
-        X_data[layer_idx][i] = padded
-
-    return X_data
-
 
 def make_and_train_meta_model(args, device, train_set_percentage):
     train_correct_files = []
@@ -290,6 +288,15 @@ def make_and_train_meta_model(args, device, train_set_percentage):
                                                                 input_files=valid_input_files, one_class='incorrect')
 
     LOGGER.info('Finished creating training and validation datasets')
+
+    # Creating padding and concatenation of layer data
+    LOGGER.info('Creating padding and concatenation')
+    layer_idx_list = [0, 1] # For span_start and span_end last layers
+    max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
+                  valid_incorrect_dataset.calc_max_dim(layer_idx_list))
+    train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
 
     # Get counts and make weights for balancing training samples
     correct_count = train_dataset.get_correct_len()
@@ -343,12 +350,13 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     try:
         os.mkdir(args.results_dir)
         LOGGER.info("Created directory for outputs")
-        accuracies_file_name = os.path.join(args.results_dir+sys.argv[0]+'_accuracies_record.txt')
-        accuracies_file = open(accuracies_file_name, "w+")
     except:
         LOGGER.error('ERROR: Could not create results directory')
         raise Exception('Could not create results directory')
 
+    # Open results file
+    accuracies_file_name = os.path.join(args.results_dir+'_'+sys.argv[0]+'_accuracies_record.txt')
+    accuracies_file = open(accuracies_file_name, "w+")
 
     meta_optimizer = optim.Adam(meta_model.parameters(),lr=.00001)
     scheduler = ReduceLROnPlateau(meta_optimizer, 'max', verbose=True)
@@ -365,10 +373,12 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     best_total_diff_adj_geo_acc_error = 0
 
     for epoch in range(1,args.meta_train_num_epochs+1):
-        LOGGER.info('Starting epoch {}'.format(epoch))
+        LOGGER.info('Training: Starting epoch {}'.format(epoch))
         train_acc = train_meta(meta_model, device, train_loader, meta_optimizer, epoch)
-
+        LOGGER.info('Training: Finished epoch {}'.format(epoch))
+        LOGGER.info('Testing: Starting epoch {}'.format(epoch))
         correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
+        LOGGER.info('Testing: Finished epoch {}'.format(epoch))
         total_acc = error_acc + correct_acc
         total_geo_acc = np.sqrt(error_acc * correct_acc)
         total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
