@@ -175,7 +175,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         Xs_to_return = []
 
         for layer in range(len(self.X_data)):
-            Xs_to_return.append(self.X_data[layer][idx].float().to(CUDA_DEVICE))
+            Xs_to_return.append(self.X_data[layer][idx].float())
         
         Xs_to_return = (Xs_to_return[0])
 
@@ -242,6 +242,7 @@ def process_layer_data(data, layer_no):
     processed_data = data
     if len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_inputs.torch':
         if layer_no == 0:
+            IPython.embed()
             processed_data = data[0]
 
     elif len(LAYER_NAMES) == 2:
