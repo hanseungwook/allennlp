@@ -175,11 +175,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         Xs_to_return = []
 
         for layer in range(len(self.X_data)):
-<<<<<<< HEAD
-            Xs_to_return.append(self.X_data[layer][idx].float().to())
-=======
             Xs_to_return.append(self.X_data[layer][idx].float())
->>>>>>> 2add25d1997f75115d8d00717008ecbcd3e7608f
         
         Xs_to_return = (Xs_to_return[0])
 
