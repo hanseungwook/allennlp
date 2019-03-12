@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import IPython
 
 class FCMetaNet(nn.Module):
 
@@ -25,34 +25,118 @@ class FCMetaNet(nn.Module):
         self.bn6 = nn.BatchNorm1d(64)
 
         self.fc7 = nn.Linear(64, 2)
+        self._relu = nn.ReLU()
+        self._dropout = nn.Dropout()
 
 
     def forward(self, x):
-
-        x = F.relu(self.fc1(x))
+        x = self._relu(self.fc1(x))
         x = self.bn1(x)
-
         #x = F.dropout(x, training=self.training)
-        x = F.relu(self.fc2(x))
+        x = self._relu(self.fc2(x))
         x = self.bn2(x)
 
-        x = F.dropout(x, training=self.training)
+        x = self._dropout(x)
 
-        x = F.relu(self.fc3(x))
+        x = self._relu(self.fc3(x))
         x = self.bn3(x)
 
         #x = F.dropout(x, training=self.training)
-        x = F.relu(self.fc4(x))
+        x = self._relu(self.fc4(x))
         x = self.bn4(x)
-        x = F.dropout(x, training=self.training)
+        x = self._dropout(x)
 
-        x = F.relu(self.fc5(x))
+        x = self._relu(self.fc5(x))
         x = self.bn5(x)
         #x = F.dropout(x, training=self.training)
 
-        x = F.relu(self.fc6(x))
+        x = self._relu(self.fc6(x))
         x = self.bn6(x)
 
         x = self.fc7(x)
 
         return F.log_softmax(x, dim = 1)
+
+def train_meta(model, device, train_loader, optimizer, epoch):
+    model.train()
+    correct = 0
+
+    for batch_idx, (data, target) in enumerate(train_loader):
+        #IPython.embed()
+        #only need to put tensors in position 0 onto device (?)
+        inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
+        data[0] = data[0].to(device)
+        torch.cat(data, out=inputs)
+        target = target.to(device)
+        optimizer.zero_grad()
+        output = model(inputs)
+        criterion = nn.CrossEntropyLoss()
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        pred = output.max(1, keepdim=True)[1]
+        correct += pred.eq(target.view_as(pred)).sum().item()
+
+        if batch_idx % 100 == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), loss.item()))
+    
+    print('percentage correct:')
+    correct_percent = 100.0*correct/len(train_loader.dataset)
+    print(correct_percent)
+    return correct_percent
+
+def test_meta_model(model, device, error_test_loader, correct_test_loader, optimizer, epoch):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    accuracies = []
+    with torch.no_grad():
+
+        test_loss = 0
+        correct = 0
+        correct_acc = 0
+        error_acc = 0
+
+        for batch_idx, (data, target) in enumerate(correct_test_loader):
+            
+            #only need to put tensors in position 0 onto device (?)
+            data[0] = data[0].to(device)
+
+            target = target.to(device)
+            output = model(data)
+            criterion = nn.CrossEntropyLoss()
+            test_loss += criterion(output, target)
+            pred = output.max(1, keepdim=True)[1]
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+
+        test_loss /= len(correct_test_loader.dataset)
+        print('\nTest set: Average loss on correctly classified examples: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(correct_test_loader.dataset),
+            100. * correct / len(correct_test_loader.dataset)))
+        correct_acc = 100. * correct / len(correct_test_loader.dataset)
+
+        test_loss = 0
+        correct = 0
+
+        for batch_idx, (data, target) in enumerate(error_test_loader):
+            
+            #only need to put tensors in position 0 onto device (?)
+            data[0] = data[0].to(device)
+
+            target = target.to(device)
+            output = model(data)
+            criterion = nn.CrossEntropyLoss()
+            test_loss += criterion(output, target)
+            pred = output.max(1, keepdim=True)[1]
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+
+        test_loss /= len(error_test_loader.dataset)
+        print('\nTest set: Average loss on incorrectly classified examples: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(error_test_loader.dataset),
+            100. * correct / len(error_test_loader.dataset)))
+        error_acc = 100. * correct / len(error_test_loader.dataset)
+    return (correct_acc, error_acc)
