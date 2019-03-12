@@ -61,24 +61,24 @@ class FCMetaNet1(nn.Module):
 
     def __init__(self, first_layer_size):
         super(FCMetaNet1, self).__init__()
-        self.fc1 = nn.Linear(first_layer_size, 2048) #input dimension both output and fc layer output
-        self.bn1 = nn.BatchNorm1d(2048)
+        self.fc1 = nn.Linear(first_layer_size, 1024) #input dimension both output and fc layer output
+        self.bn1 = nn.BatchNorm1d(1024)
 
-        self.fc2 = nn.Linear(2048, 3500)
-        self.bn2 = nn.BatchNorm1d(3500)
-        self.fc3 = nn.Linear(3500, 1024)
-        self.bn3 = nn.BatchNorm1d(1024)
+        self.fc2 = nn.Linear(1024, 1750)
+        self.bn2 = nn.BatchNorm1d(1750)
+        self.fc3 = nn.Linear(1750, 512)
+        self.bn3 = nn.BatchNorm1d(512)
 
-        self.fc4 = nn.Linear(1024, 256)
-        self.bn4 = nn.BatchNorm1d(256)
+        self.fc4 = nn.Linear(512, 128)
+        self.bn4 = nn.BatchNorm1d(128)
 
-        self.fc5 = nn.Linear(256, 256)
-        self.bn5 = nn.BatchNorm1d(256)
+        self.fc5 = nn.Linear(128, 128)
+        self.bn5 = nn.BatchNorm1d(128)
 
-        self.fc6 = nn.Linear(256, 32)
-        self.bn6 = nn.BatchNorm1d(32)
+        self.fc6 = nn.Linear(128, 16)
+        self.bn6 = nn.BatchNorm1d(16)
 
-        self.fc7 = nn.Linear(32, 1)
+        self.fc7 = nn.Linear(16, 2)
         self._relu = nn.ReLU()
         self._dropout = nn.Dropout()
 
