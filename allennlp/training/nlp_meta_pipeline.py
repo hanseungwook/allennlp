@@ -355,7 +355,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         raise Exception('Could not create results directory')
 
     # Open results file
-    accuracies_file_name = os.path.join(args.results_dir+'_'+sys.argv[0]+'_accuracies_record.txt')
+    accuracies_file_name = os.path.join(args.results_dir, sys.argv[0]+'_accuracies_record.txt')
     accuracies_file = open(accuracies_file_name, "w+")
 
     meta_optimizer = optim.Adam(meta_model.parameters(),lr=.00001)
@@ -393,7 +393,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
             if epoch > 1:
                 os.remove(old_total_acc_file_name)
 
-            old_total_acc_file_name = results_folder+'_best_total_acc_valid_epoch_'+str(epoch)+'.pth'
+            old_total_acc_file_name = os.path.join(args.results_dir, 'best_total_acc_valid_epoch_'+str(epoch)+'.pth')
             torch.save(meta_model.state_dict(), old_total_acc_file_name)
 
         if total_diff_adj_geo_acc > best_total_diff_adj_geo_acc:
@@ -405,7 +405,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
                 os.remove(old_diff_adj_geo_acc_file_name)
 
             old_diff_adj_geo_acc_file_name_created = True
-            old_diff_adj_geo_acc_file_name = results_folder + '_best_diff_adj_geo_acc_valid_epoch_' + str(epoch) + '.pth'
+            old_diff_adj_geo_acc_file_name = os.path.join(args.results_dir, 'best_diff_adj_geo_acc_valid_epoch_' + str(epoch) + '.pth')
             torch.save(meta_model.state_dict(), old_diff_adj_geo_acc_file_name)
 
         
@@ -425,7 +425,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     LOGGER.info('Finished epoch {}'.format(epoch))
     return best_total_diff_adj_geo_acc_correct, best_total_diff_adj_geo_acc_error
-    
+
 
 def main():
     parser = argparse.ArgumentParser(description='Meta NLP pipeline')
@@ -443,7 +443,7 @@ def main():
                         help='random seed (default: 10027)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
-    parser.add_argument('--meta_batch_size', type=int, default=1, metavar='MBS',
+    parser.add_argument('--meta_batch_size', type=int, default=50, metavar='MBS',
                         help='size of batches to the meta classifier')
     parser.add_argument('--meta_train_num_epochs', type=int, default=1, metavar='metatrainepochs',
                         help='size of batches to the meta classifier')
