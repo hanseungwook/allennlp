@@ -99,12 +99,13 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
         error_acc = 0
 
         for batch_idx, (data, target) in enumerate(correct_test_loader):
-            
-            #only need to put tensors in position 0 onto device (?)
+            inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
             data[0] = data[0].to(device)
+            torch.cat(data, out=inputs)
+            #only need to put tensors in position 0 onto device (?)
 
             target = target.to(device)
-            output = model(data)
+            output = model(inputs)
             criterion = nn.CrossEntropyLoss()
             test_loss += criterion(output, target)
             pred = output.max(1, keepdim=True)[1]
