@@ -7,7 +7,7 @@ def consolidate_batches(file_dir):
         print(inter_layer)
         consolidated_tensors = []
 
-        inter_dir = os.path.join(os.getcwd(), inter_layer)
+        inter_dir = os.path.join(file_dir, inter_layer)
 
         files = os.listdir(inter_dir)
         files.sort()
