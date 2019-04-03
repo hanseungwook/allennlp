@@ -298,6 +298,9 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     valid_incorrect_dataset = IntermediateLayersInMemoryDataset(incorrect_files=valid_incorrect_files, 
                                                                 input_files=valid_input_files, one_class='incorrect')
 
+    print('Correct: {}, Incorrect: {}\n'.format(train_dataset.get_correct_len(), train_dataset.get_incorrect_len()))
+    return 1
+
     LOGGER.info('Finished creating training and validation datasets')
 
     # Creating padding and concatenation of layer data for last layer outputs
