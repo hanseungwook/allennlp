@@ -13,6 +13,7 @@ def consolidate_batches(file_dir):
         files.sort()
 
         for f in files:
+            print(inter_dir+'/'+f)
             t = torch.load(inter_dir + '/' + f)
             for x in t:
                 consolidated_tensors.append(x)

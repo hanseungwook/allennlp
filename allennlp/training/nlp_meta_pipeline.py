@@ -20,7 +20,7 @@ import IPython
 
 
 ### GLOBAL PARAMETERS
-CUDA_DEVICE = 'cuda:1'
+CUDA_DEVICE = torch.device('cpu')
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
 LAYER_NAMES = ['model_layer_outputs.torch']
