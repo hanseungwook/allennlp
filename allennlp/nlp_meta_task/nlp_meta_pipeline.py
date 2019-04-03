@@ -343,10 +343,10 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     LOGGER.info('Creating training and validation dataset loaders')
     # Creating data loaders
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,  shuffle = False,
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 16,  shuffle = False,
         sampler = train_weighted_sampler)
-    correct_valid_loader = torch.utils.data.DataLoader(valid_correct_dataset, batch_size = 32,  shuffle = False)
-    incorrect_valid_loader = torch.utils.data.DataLoader(valid_incorrect_dataset, batch_size = 32,  shuffle = False)
+    correct_valid_loader = torch.utils.data.DataLoader(valid_correct_dataset, batch_size = 16,  shuffle = False)
+    incorrect_valid_loader = torch.utils.data.DataLoader(valid_incorrect_dataset, batch_size = 16,  shuffle = False)
 
     # Setting seed
     torch.manual_seed(args.seed)
