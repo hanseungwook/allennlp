@@ -72,15 +72,13 @@ def compute_metrics(outputs, question, passage, span_start = None, span_end = No
     metrics['span_end_acc'] = span_end_acc.get_metric()
     return metrics
 
-def load_model(serialization_dir):
+def load_model(serialization_dir, cuda):
     config = Params.from_file(os.path.join(serialization_dir, CONFIG_NAME))
     config.loading_from_archive = True
-    cuda_device = int(config['trainer']['cuda_device'])
-    cuda_device = -1
     model = Model.load(config.duplicate(),
                     weights_file = args.weights_file,
                     serialization_dir = args.serialization_dir,
-                    cuda_device = cuda_device)
+                    cuda_device = cuda)
 
     return model
 
@@ -125,15 +123,19 @@ def make_output_dirs(output_dir):
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("weights_file")
-    parser.add_argument("serialization_dir")
-    parser.add_argument("val_filepath")
-    parser.add_argument("output_dir")
+    parser.add_argument("--weights_file")
+    parser.add_argument("--serialization_dir")
+    parser.add_argument("--val_filepath")
+    parser.add_argument("--output_dir")
+    parser.add_argument("--cuda", type=int, default=-1)
     args = parser.parse_args()
 
     # Load model and dataset reader
-    model = load_model(args.serialization_dir)
+    model = load_model(args.serialization_dir, args.cuda)
     dataset_reader = load_dataset_reader(args.serialization_dir)
+
+    # Set cuda device, if available or set
+    device = torch.device(args.cuda)
 
     # Attaching hook to:
     # Last two linear layers for span_start and span_end
@@ -202,6 +204,7 @@ if __name__ == "__main__":
             
             # Change dataset to tensors and predict with model
             model_input = dataset.as_tensor_dict()
+            model_input = {k: v.to(device) for k, v in model_input.items()}
             model_outputs = model(**model_input)
             metrics = compute_metrics(model_outputs, **model_input)
 
