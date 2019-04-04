@@ -296,20 +296,20 @@ if __name__ == "__main__":
                 torch.save(correct_end_ll_start_outputs, os.path.join(dir_name, INTER_NAMES[11], 'correct_end_ll_start_outputs{}.torch'.format(batch_index)))
                 torch.save(incorrect_ll_start_outputs, os.path.join(dir_name, INTER_NAMES[12], 'incorrect_ll_start_outputs{}.torch'.format(batch_index)))
 
-                torch.save(correct_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[12], 'correct_ll_end_outputs{}.torch'.format(batch_index)))
-                torch.save(correct_start_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[13], 'correct_start_ll_end_outputs{}.torch'.format(batch_index)))
-                torch.save(correct_end_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[14], 'correct_end_ll_end_outputs{}.torch'.format(batch_index)))
-                torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[15], 'incorrect_ll_end_outputs{}.torch'.format(batch_index)))
+                torch.save(correct_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[13], 'correct_ll_end_outputs{}.torch'.format(batch_index)))
+                torch.save(correct_start_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[14], 'correct_start_ll_end_outputs{}.torch'.format(batch_index)))
+                torch.save(correct_end_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[15], 'correct_end_ll_end_outputs{}.torch'.format(batch_index)))
+                torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[16], 'incorrect_ll_end_outputs{}.torch'.format(batch_index)))
                 
-                torch.save(correct_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[16], 'correct_model_layer_inputs{}.torch'.format(batch_index)))
-                torch.save(correct_start_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[17], 'correct_start_model_layer_inputs{}.torch'.format(batch_index)))
-                torch.save(correct_end_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[18], 'correct_end_model_layer_inputs{}.torch'.format(batch_index)))
-                torch.save(incorrect_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[19], 'incorrect_model_layer_inputs{}.torch'.format(batch_index)))
+                torch.save(correct_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[17], 'correct_model_layer_inputs{}.torch'.format(batch_index)))
+                torch.save(correct_start_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[18], 'correct_start_model_layer_inputs{}.torch'.format(batch_index)))
+                torch.save(correct_end_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[19], 'correct_end_model_layer_inputs{}.torch'.format(batch_index)))
+                torch.save(incorrect_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[20], 'incorrect_model_layer_inputs{}.torch'.format(batch_index)))
 
-                torch.save(correct_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[20], 'correct_model_layer_outputs{}.torch'.format(batch_index)))
-                torch.save(correct_start_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[21], 'correct_start_model_layer_outputs{}.torch'.format(batch_index)))
-                torch.save(correct_end_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[22], 'correct_end_model_layer_outputs{}.torch'.format(batch_index)))
-                torch.save(incorrect_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[23], 'incorrect_model_layer_outputs{}.torch'.format(batch_index)))
+                torch.save(correct_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[21], 'correct_model_layer_outputs{}.torch'.format(batch_index)))
+                torch.save(correct_start_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[22], 'correct_start_model_layer_outputs{}.torch'.format(batch_index)))
+                torch.save(correct_end_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[23], 'correct_end_model_layer_outputs{}.torch'.format(batch_index)))
+                torch.save(incorrect_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[24], 'incorrect_model_layer_outputs{}.torch'.format(batch_index)))
 
                 # Clearing intermediate outputs
                 outputs.clear()
@@ -346,6 +346,7 @@ if __name__ == "__main__":
         # Saving last batch / leftovers
         batch_index += 1
 
+        print('Last batch path: ' + os.path.join(dir_name, INTER_NAMES[0], 'outputs.torch'))
         # Saving all the intermediate/final inputs/outputs
         torch.save(outputs, os.path.join(dir_name, INTER_NAMES[0], 'outputs{}.torch'.format(batch_index)))
         torch.save(correct_outputs, os.path.join(dir_name, INTER_NAMES[1], 'correct_outputs{}.torch'.format(batch_index)))
@@ -363,17 +364,17 @@ if __name__ == "__main__":
         torch.save(correct_end_ll_start_outputs, os.path.join(dir_name, INTER_NAMES[11], 'correct_end_ll_start_outputs{}.torch'.format(batch_index)))
         torch.save(incorrect_ll_start_outputs, os.path.join(dir_name, INTER_NAMES[12], 'incorrect_ll_start_outputs{}.torch'.format(batch_index)))
 
-        torch.save(correct_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[12], 'correct_ll_end_outputs{}.torch'.format(batch_index)))
-        torch.save(correct_start_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[13], 'correct_start_ll_end_outputs{}.torch'.format(batch_index)))
-        torch.save(correct_end_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[14], 'correct_end_ll_end_outputs{}.torch'.format(batch_index)))
-        torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[15], 'incorrect_ll_end_outputs{}.torch'.format(batch_index)))
+        torch.save(correct_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[13], 'correct_ll_end_outputs{}.torch'.format(batch_index)))
+        torch.save(correct_start_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[14], 'correct_start_ll_end_outputs{}.torch'.format(batch_index)))
+        torch.save(correct_end_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[15], 'correct_end_ll_end_outputs{}.torch'.format(batch_index)))
+        torch.save(incorrect_ll_end_outputs, os.path.join(dir_name, INTER_NAMES[16], 'incorrect_ll_end_outputs{}.torch'.format(batch_index)))
         
-        torch.save(correct_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[16], 'correct_model_layer_inputs{}.torch'.format(batch_index)))
-        torch.save(correct_start_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[17], 'correct_start_model_layer_inputs{}.torch'.format(batch_index)))
-        torch.save(correct_end_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[18], 'correct_end_model_layer_inputs{}.torch'.format(batch_index)))
-        torch.save(incorrect_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[19], 'incorrect_model_layer_inputs{}.torch'.format(batch_index)))
+        torch.save(correct_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[17], 'correct_model_layer_inputs{}.torch'.format(batch_index)))
+        torch.save(correct_start_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[18], 'correct_start_model_layer_inputs{}.torch'.format(batch_index)))
+        torch.save(correct_end_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[19], 'correct_end_model_layer_inputs{}.torch'.format(batch_index)))
+        torch.save(incorrect_model_layer_inputs, os.path.join(dir_name, INTER_NAMES[20], 'incorrect_model_layer_inputs{}.torch'.format(batch_index)))
 
-        torch.save(correct_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[20], 'correct_model_layer_outputs{}.torch'.format(batch_index)))
-        torch.save(correct_start_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[21], 'correct_start_model_layer_outputs{}.torch'.format(batch_index)))
-        torch.save(correct_end_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[22], 'correct_end_model_layer_outputs{}.torch'.format(batch_index)))
-        torch.save(incorrect_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[23], 'incorrect_model_layer_outputs{}.torch'.format(batch_index)))
+        torch.save(correct_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[21], 'correct_model_layer_outputs{}.torch'.format(batch_index)))
+        torch.save(correct_start_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[22], 'correct_start_model_layer_outputs{}.torch'.format(batch_index)))
+        torch.save(correct_end_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[23], 'correct_end_model_layer_outputs{}.torch'.format(batch_index)))
+        torch.save(incorrect_model_layer_outputs, os.path.join(dir_name, INTER_NAMES[24], 'incorrect_model_layer_outputs{}.torch'.format(batch_index)))
