@@ -12,30 +12,10 @@ from allennlp.data import DatasetReader
 from allennlp.data.dataset import Batch
 from allennlp.training.metrics import CategoricalAccuracy
 from progressbar import ProgressBar
-
+from test_model_batch import CONFIG_NAME, DEFAULT_PREDICTORS, compute_metrics, load_model, load_dataset_reader, move_input_to_device
 import IPython
 
 logger = logging.getLogger(__name__)
-
-### GLOBAL CONSTANT VARIABLES
-CONFIG_NAME = "config.json"
-DEFAULT_PREDICTORS = {
-        'atis_parser' : 'atis_parser',
-        'biaffine_parser': 'biaffine-dependency-parser',
-        'bidaf': 'machine-comprehension',
-        'bidaf-ensemble': 'machine-comprehension',
-        'bimpm': 'textual-entailment',
-        'constituency_parser': 'constituency-parser',
-        'coref': 'coreference-resolution',
-        'crf_tagger': 'sentence-tagger',
-        'decomposable_attention': 'textual-entailment',
-        'dialog_qa': 'dialog_qa',
-        'event2mind': 'event2mind',
-        'simple_tagger': 'sentence-tagger',
-        'srl': 'semantic-role-labeling',
-        'quarel_parser': 'quarel-parser',
-        'wikitables_mml_parser': 'wikitables-parser'
-}
 
 ### HOOKS
 ll_start_output = []
@@ -53,66 +33,19 @@ def model_layer_hook(self, input, output):
     model_layer_input.append(input)
     model_layer_output.append(output)
 
-# Function for calculating span_start_accuracy and span_end_accuracy
-def compute_metrics(outputs, question, passage, span_start = None, span_end = None, metadata = None):
-    metrics = {}    
-
-    span_start_acc = CategoricalAccuracy()
-    span_start_acc(outputs['span_start_logits'], span_start.squeeze(-1))
-    metrics['span_start_acc'] = span_start_acc.get_metric()
-
-    span_end_acc = CategoricalAccuracy()
-    span_end_acc(outputs['span_end_logits'], span_end.squeeze(-1))
-    metrics['span_end_acc'] = span_end_acc.get_metric()
-    return metrics
-
-def load_model(serialization_dir):
-    config = Params.from_file(os.path.join(serialization_dir, CONFIG_NAME))
-    config.loading_from_archive = True
-    cuda_device = int(config['trainer']['cuda_device'])
-    cuda_device = -1
-    model = Model.load(config.duplicate(),
-                    weights_file = args.weights_file,
-                    serialization_dir = args.serialization_dir,
-                    cuda_device = cuda_device)
-
-    return model
-
-def load_dataset_reader(serialization_dir):
-    config = Params.from_file(os.path.join(serialization_dir, CONFIG_NAME))
-    dataset_reader_params = config["dataset_reader"]
-    dataset_reader = DatasetReader.from_params(dataset_reader_params)
-
-    return dataset_reader
-
-
-# logger.info("Read {} test examples".format(len(val_dataset.instances)))
-
-### PREDICTION OF 1 EXAMPLE
-# model_type = config.get("model").get("type")
-# if not model_type in DEFAULT_PREDICTORS:
-#     raise ConfigurationError(f"No default predictor for model type {model_type}.\n"\
-#                                 f"Please specify a predictor explicitly.")
-# predictor_name = DEFAULT_PREDICTORS[model_type]
-
-# model_predictor = Predictor.by_name(predictor_name)(model, dataset_reader)
-# prediction = model_predictor.predict("Which Secretary of State attended Notre Dame?",
-#                                      "Notre Dame alumni work in various fields. Alumni working in political fields include state governors, members of the United States Congress, and former United States Secretary of State Condoleezza Rice. A notable alumnus of the College of Science is Medicine Nobel Prize winner Eric F. Wieschaus. A number of university heads are alumni, including Notre Dame's current president, the Rev. John Jenkins. Additionally, many alumni are in the media, including talk show hosts Regis Philbin and Phil Donahue, and television and radio personalities such as Mike Golic and Hannah Storm. With the university having high profile sports teams itself, a number of alumni went on to become involved in athletics outside the university, including professional baseball, basketball, football, and ice hockey players, such as Joe Theismann, Joe Montana, Tim Brown, Ross Browner, Rocket Ismail, Ruth Riley, Jeff Samardzija, Jerome Bettis, Brett Lebda, Olympic gold medalist Mariel Zagunis, professional boxer Mike Lee, former football coaches such as Charlie Weis, Frank Leahy and Knute Rockne, and Basketball Hall of Famers Austin Carr and Adrian Dantley. Other notable alumni include prominent businessman Edward J. DeBartolo, Jr. and astronaut Jim Wetherbee.")
-
-# with open('test_prediction.json', 'w') as predict_file:
-#     json.dump(prediction, predict_file)
 
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("weights_file")
-    parser.add_argument("serialization_dir")
-    parser.add_argument("val_filepath")
-    parser.add_argument("output_dir")
+    parser.add_argument("--weights_file")
+    parser.add_argument("--serialization_dir")
+    parser.add_argument("--val_filepath")
+    parser.add_argument("--output_dir")
+    parser.add_argument("--cuda", type=int, default=-1)
     args = parser.parse_args()
 
     # Load model and dataset reader
-    model = load_model(args.serialization_dir)
+    model = load_model(args.serialization_dir, args.cuda)
     dataset_reader = load_dataset_reader(args.serialization_dir)
 
     # Attaching hook to:
@@ -135,8 +68,8 @@ if __name__ == "__main__":
         logger.info("Created directory for outputs")
     except:
         logger.error("ERROR: Could not create outputs directory")
+        raise Exception("Output directory already exists!")
 
-    
     count = 0
     with torch.no_grad():
         outputs = []
@@ -181,6 +114,7 @@ if __name__ == "__main__":
             
             # Change dataset to tensors and predict with model
             model_input = dataset.as_tensor_dict()
+            model_input = move_input_to_device(model_input)
             model_outputs = model(**model_input)
             metrics = compute_metrics(model_outputs, **model_input)
 
