@@ -232,38 +232,43 @@ if __name__ == "__main__":
             # Save outputs
             outputs.append(model_outputs)
 
+            model_layer_input[0] = tuple(elem.cpu() for elem in model_layer_input[0])
+            ll_start_output[0] = ll_start_output[0].cpu() 
+            ll_end_output[0] = ll_end_output[0].cpu()
+            model_layer_output[0] = model_layer_output[0].cpu()
+
             # Save in 4 categories/folders
             if span_start_acc and span_end_acc:
                 correct_outputs.append(model_outputs)
                 correct_inputs.append(model_input)
-                correct_ll_start_outputs.append(ll_start_output[0].cpu())
-                correct_ll_end_outputs.append(ll_end_output[0].cpu())
-                correct_model_layer_inputs.append(model_layer_input[0].cpu())
-                correct_model_layer_outputs.append(model_layer_output[0].cpu())
+                correct_ll_start_outputs.append(ll_start_output[0])
+                correct_ll_end_outputs.append(ll_end_output[0])
+                correct_model_layer_inputs.append(model_layer_input[0])
+                correct_model_layer_outputs.append(model_layer_output[0])
             
             elif span_start_acc and not span_end_acc:
                 correct_start_outputs.append(model_outputs)
                 correct_start_inputs.append(model_input)
-                correct_start_ll_start_outputs.append(ll_start_output[0].cpu())
-                correct_start_ll_end_outputs.append(ll_end_output[0].cpu())
-                correct_start_model_layer_inputs.append(model_layer_input[0].cpu())
-                correct_start_model_layer_outputs.append(model_layer_output[0].cpu())
+                correct_start_ll_start_outputs.append(ll_start_output[0])
+                correct_start_ll_end_outputs.append(ll_end_output[0])
+                correct_start_model_layer_inputs.append(model_layer_input[0])
+                correct_start_model_layer_outputs.append(model_layer_output[0])
 
             elif not span_start_acc and span_end_acc:
                 correct_end_outputs.append(model_outputs)
                 correct_end_inputs.append(model_input)
-                correct_end_ll_start_outputs.append(ll_start_output[0].cpu())
-                correct_end_ll_end_outputs.append(ll_end_output[0].cpu())
-                correct_end_model_layer_inputs.append(model_layer_input[0].cpu())
-                correct_end_model_layer_outputs.append(model_layer_output[0].cpu())
+                correct_end_ll_start_outputs.append(ll_start_output[0])
+                correct_end_ll_end_outputs.append(ll_end_output[0])
+                correct_end_model_layer_inputs.append(model_layer_input[0])
+                correct_end_model_layer_outputs.append(model_layer_output[0])
             
             else:
                 incorrect_outputs.append(model_outputs)
                 incorrect_inputs.append(model_input)
-                incorrect_ll_start_outputs.append(ll_start_output[0].cpu())
-                incorrect_ll_end_outputs.append(ll_end_output[0].cpu())
-                incorrect_model_layer_inputs.append(model_layer_input[0].cpu())
-                incorrect_model_layer_outputs.append(model_layer_output[0].cpu())
+                incorrect_ll_start_outputs.append(ll_start_output[0])
+                incorrect_ll_end_outputs.append(ll_end_output[0])
+                incorrect_model_layer_inputs.append(model_layer_input[0])
+                incorrect_model_layer_outputs.append(model_layer_output[0])
 
             ll_start_output.clear()
             ll_end_output.clear()
