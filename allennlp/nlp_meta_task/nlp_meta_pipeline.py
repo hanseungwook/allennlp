@@ -330,9 +330,9 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     for i in range(len(y_vals)):
         if y_vals[i] == 0:
-            weights[i] = incorrect_weight
+            train_weights[i] = incorrect_weight
         else:
-            weights[i] = correct_weight
+            train_weights[i] = correct_weight
     
     correct_range = list(range(correct_count))
     incorrect_range = list(range(correct_count, total_count))
