@@ -326,7 +326,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     correct_weight = float(total_count)/correct_count
     incorrect_weight = float(total_count)/incorrect_count
 
-    weights = np.zeros((total_count))
+    train_weights = torch.zeros(total_count, dtype=torch.double)
 
     for i in range(len(y_vals)):
         if y_vals[i] == 0:
@@ -338,7 +338,6 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     incorrect_range = list(range(correct_count, total_count))
     total_range = list(range(total_count))
 
-    train_weights = torch.as_tensor(weights, device=device, dtype=torch.double)
     train_weighted_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_weights, total_count)
 
     LOGGER.info('Creating training and validation dataset loaders')
