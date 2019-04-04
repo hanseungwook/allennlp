@@ -367,7 +367,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     try:
         os.mkdir(args.results_dir)
-        LOGGER.info("Created directory for outputs")
+        LOGGER.info("Created directory for results")
     except:
         LOGGER.error('ERROR: Could not create results directory')
         raise Exception('Could not create results directory')
@@ -466,9 +466,10 @@ def main():
     parser.add_argument('--meta_train_num_epochs', type=int, default=50, metavar='metatrainepochs',
                         help='size of batches to the meta classifier')
     parser.add_argument('--load_meta_model_from_saved_state', default="")
+    parser.add_argument('--cuda', type=int, default=-1)
 
     args = parser.parse_args()
-    device = torch.device(CUDA_DEVICE)
+    device = torch.device(args.cuda)
 
     make_and_train_meta_model(args, device, 1)
 
