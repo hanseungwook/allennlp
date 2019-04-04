@@ -3,6 +3,10 @@ import os
 import argparse
 
 def consolidate_batches(file_dir):
+    consolid_dir = os.path.join(file_dir, 'consolidated')
+    if not os.path.exists(consolid_dir):
+        os.mkdir(consolid_dir)
+
     for inter_layer in next(os.walk(file_dir))[1]:
         print(inter_layer)
         consolidated_tensors = []
@@ -18,7 +22,7 @@ def consolidate_batches(file_dir):
             for x in t:
                 consolidated_tensors.append(x)
 
-        torch.save(consolidated_tensors, inter_dir + '/' + inter_layer + '.torch')
+        torch.save(consolidated_tensors, consolid_dir + '/' + inter_layer + '.torch')
         consolidated_tensors.clear()
 
 if __name__ == "__main__":
