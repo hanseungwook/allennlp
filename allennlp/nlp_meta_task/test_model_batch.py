@@ -120,11 +120,7 @@ def make_output_dirs(output_dir):
 # with open('test_prediction.json', 'w') as predict_file:
 #     json.dump(prediction, predict_file)
 def move_input_to_device(model_input):
-    model_input['question'] = {k: v.to(device) for k,v in model_input['question'].items()}
-    model_input['passage'] = {k: v.to(device) for k,v in model_input['passage'].items()}
-    model_input['span_start'] = model_input['span_start'].to(device)
-    model_input['span_end'] = model_input['span_end'].to(device)
-
+    
     return model_input
 
 
@@ -212,7 +208,12 @@ if __name__ == "__main__":
             
             # Change dataset to tensors and predict with model
             model_input = dataset.as_tensor_dict()
-            model_input = move_input_to_device(model_input)
+            model_input['question'] = {k: v.to(device) for k,v in model_input['question'].items()}
+            model_input['passage'] = {k: v.to(device) for k,v in model_input['passage'].items()}
+            model_input['span_start'] = model_input['span_start'].to(device)
+            model_input['span_end'] = model_input['span_end'].to(device)
+
+           # model_input = move_input_to_device(model_input)
 
             model_outputs = model(**model_input)
             metrics = compute_metrics(model_outputs, **model_input)
