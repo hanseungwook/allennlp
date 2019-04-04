@@ -367,7 +367,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     try:
         os.mkdir(args.results_dir)
-        LOGGER.info("Created directory for outputs")
+        LOGGER.info("Created directory for results")
     except:
         LOGGER.error('ERROR: Could not create results directory')
         raise Exception('Could not create results directory')

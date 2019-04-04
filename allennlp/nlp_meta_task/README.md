@@ -32,15 +32,20 @@ This assumes that you have cloned my **forked** AllenNLP git repository.
   
 ```bash
 cd allennlp/allennlp/training/
-python3 test_model.py {relative path to the weights to load in serialized_dir} {relative path to serialized_dir} {relative path to squad dataset to evaluate}
+python3 test_model_batch.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
+```
+
+If you need to separate the intermediate outputs into batches b/c of memory error, the following code:
+```bash
+python3 test_model_batch.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
 ```
 
 Example command
 ```bash
-python3 test_model.py ../../../serialized_models/test4/best.th ../../../serialized_models/test4/ ../../../squad_datasets/dataset_val_q.json 
+python3 test_model.py --weights_dir=../../../serialized_models/test4/best.th --serialization_dir=../../../serialized_models/test4/ --val_filepath../../../squad_datasets/dataset_val_q.json --cuda=0
 ```  
 
-**Note**: Depending on the existence of GPU, need to change the CUDA_DEVICE parameter in test_model.py  
+**Note**: Depending on the existence of GPU, need to change the 'cuda' parameter in test_model.py  
 
 # 2. Running the meta model
 
