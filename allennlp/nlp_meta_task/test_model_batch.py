@@ -40,7 +40,7 @@ INTER_NAMES = ['outputs', 'correct_outputs', 'correct_start_outputs', 'correct_e
                 'correct_inputs', 'correct_start_inputs', 'correct_end_inputs', 'incorrect_inputs',
                 'correct_ll_start_outputs', 'correct_start_ll_start_outputs', 'correct_end_ll_start_outputs', 'incorrect_ll_start_outputs',
                 'correct_ll_end_outputs', 'correct_start_ll_end_outputs', 'correct_end_ll_end_outputs', 'incorrect_ll_end_outputs',
-                'correct_model_layer_inputs', 'correct_start_model_layer_inputs', 'correct_end_model_layer_inputs', 'incorrect__model_layer_inputs',
+                'correct_model_layer_inputs', 'correct_start_model_layer_inputs', 'correct_end_model_layer_inputs', 'incorrect_model_layer_inputs',
                 'correct_model_layer_outputs', 'correct_start_model_layer_outputs', 'correct_end_model_layer_outputs', 'incorrect_model_layer_outputs']       
 
 ### HOOKS
