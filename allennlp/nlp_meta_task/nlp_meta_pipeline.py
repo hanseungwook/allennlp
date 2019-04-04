@@ -357,7 +357,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     # Setting up meta model
     size_of_first_layer = train_dataset.get_size()
-    meta_model=FCMetaNet1(size_of_first_layer).to(device)
+    meta_model=FCMetaNet1(size_of_first_layer).cuda(args.cuda)
 
     # If saved state given, load into model
     if args.load_meta_model_from_saved_state:
