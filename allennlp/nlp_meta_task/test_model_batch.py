@@ -274,7 +274,8 @@ if __name__ == "__main__":
             ll_end_output.clear()
             model_layer_input.clear()
             model_layer_output.clear()
-
+            
+            """
             # Saving all the intermediate/final inputs/outputs
             print(os.path.join(dir_name, INTER_NAMES[0], 'outputs{}.torch'.format(batch_index)))
             print(os.path.join(dir_name, INTER_NAMES[1], 'correct_outputs{}.torch'.format(batch_index)))
@@ -306,8 +307,8 @@ if __name__ == "__main__":
             print(os.path.join(dir_name, INTER_NAMES[22], 'correct_start_model_layer_outputs{}.torch'.format(batch_index)))
             print(os.path.join(dir_name, INTER_NAMES[23], 'correct_end_model_layer_outputs{}.torch'.format(batch_index)))
             print(os.path.join(dir_name, INTER_NAMES[24], 'incorrect_model_layer_outputs{}.torch'.format(batch_index)))
+            """
 
-            return 0
             if instance_count % 10000 == 0:
                 batch_index += 1
 
