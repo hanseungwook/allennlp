@@ -161,7 +161,7 @@ def split_data_by_q(file_path, split_ratio):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("dataset_filepath")
+    parser.add_argument("--dataset_filepath", help='Path to dataset to split')
     args = parser.parse_args()
 
     # num_paragraphs = count_paragraphs(args.dataset_filepath)
