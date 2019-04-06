@@ -108,7 +108,7 @@ def split_data_by_par(file_path, split_ratio):
         return dataset_train, dataset_val
 
 # TODO: Split data by using # of questions
-def split_data_by_q(file_path, split_ratio):
+def split_data_by_q(file_path, output1, output2, split_ratio):
     with open(file_path) as dataset_file:
         dataset_json = json.load(dataset_file)
         dataset = dataset_json['data']
@@ -148,20 +148,22 @@ def split_data_by_q(file_path, split_ratio):
             dataset_val['data'].append(val_dict)
 
         # Save train and val datasets
-        with open('dataset_train_q.json', 'w') as split_train:
+        with open(output1, 'w') as split_train:
             logger.info("Saving train dataset")
             dataset_train = {'data' : dataset}
             json.dump(dataset_train, split_train)
         
-        with open('dataset_val_q.json', 'w') as split_val:
+        with open(output2, 'w') as split_val:
             logger.info("Saving validation dataset")
             json.dump(dataset_val, split_val)
 
-        return dataset, dataset_val
+        return dataset_train, dataset_val
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("dataset_filepath")
+    parser.add_argument("--dataset_filepath", help="Path to dataset to split")
+    parser.add_argument("--output1", help='Name of first split of the data')
+    parser.add_argument("--output2", help='Name of second split of the data')
     args = parser.parse_args()
 
     # num_paragraphs = count_paragraphs(args.dataset_filepath)
@@ -173,7 +175,7 @@ if __name__ == "__main__":
     # Split data by questions
     # dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, 0.2)
 
-    dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, 0.5)
-    print(count_qs('./dataset_train_q.json'))
-    print(count_qs('./dataset_val_q.json'))
+    dataset_train, dataset_val = split_data_by_q(args.dataset_filepath, args.output1, args.output2, 0.5)
+    print(count_qs(output1))
+    print(count_qs(output2))
     
