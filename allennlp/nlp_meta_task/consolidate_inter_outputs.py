@@ -7,8 +7,10 @@ def consolidate_batches(file_dir):
     if not os.path.exists(consolid_dir):
         os.mkdir(consolid_dir)
 
-    for inter_layer in next(os.walk(file_dir))[1]:
+    for inter_layer in next(os.walk(file_dir))[1]: 
         print(inter_layer)
+        if inter_layer == 'consolidated':
+            continue
         consolidated_tensors = []
 
         inter_dir = os.path.join(file_dir, inter_layer)
