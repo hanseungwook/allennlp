@@ -37,15 +37,15 @@ def model_layer_hook(self, input, output):
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--weights_file")
-    parser.add_argument("--serialization_dir")
-    parser.add_argument("--val_filepath")
-    parser.add_argument("--output_dir")
-    parser.add_argument("--cuda", type=int, default=-1)
+    parser.add_argument("--weights_file", help="Path to model weights file")
+    parser.add_argument("--serialization_dir", help="Path to serialization directory")
+    parser.add_argument("--val_filepath", help="Path to dataset to evaluate and save intermediate outputs of")
+    parser.add_argument("--output_dir", help="Path to output directory")
+    parser.add_argument("--cuda", help="CUDA device #",type=int, default=-1)
     args = parser.parse_args()
 
     # Load model and dataset reader
-    model = load_model(args.serialization_dir, args.cuda)
+    model = load_model(args.weights_file, args.serialization_dir, args.cuda)
     dataset_reader = load_dataset_reader(args.serialization_dir)
 
     # Attaching hook to:

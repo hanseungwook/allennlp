@@ -72,12 +72,12 @@ def compute_metrics(outputs, question, passage, span_start = None, span_end = No
     metrics['span_end_acc'] = span_end_acc.get_metric()
     return metrics
 
-def load_model(serialization_dir, cuda):
+def load_model(weights_file, serialization_dir, cuda):
     config = Params.from_file(os.path.join(serialization_dir, CONFIG_NAME))
     config.loading_from_archive = True
     model = Model.load(config.duplicate(),
-                    weights_file = args.weights_file,
-                    serialization_dir = args.serialization_dir,
+                    weights_file = weights_file,
+                    serialization_dir = serialization_dir,
                     cuda_device = cuda)
 
     return model
@@ -135,15 +135,15 @@ def move_input_to_device(model_input):
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--weights_file")
-    parser.add_argument("--serialization_dir")
-    parser.add_argument("--val_filepath")
-    parser.add_argument("--output_dir")
-    parser.add_argument("--cuda", type=int, default=-1)
+    parser.add_argument("--weights_file", help="Path to model weights file")
+    parser.add_argument("--serialization_dir", help="Path to serialization directory")
+    parser.add_argument("--val_filepath", help="Path to dataset to evaluate and save intermediate outputs of")
+    parser.add_argument("--output_dir", help="Path to output directory")
+    parser.add_argument("--cuda", help="CUDA device #",type=int, default=-1)
     args = parser.parse_args()
 
     # Load model and dataset reader
-    model = load_model(args.serialization_dir, args.cuda)
+    model = load_model(args.weights_file, args.serialization_dir, args.cuda)
     dataset_reader = load_dataset_reader(args.serialization_dir)
 
     # Set cuda device, if available or set
@@ -379,7 +379,6 @@ if __name__ == "__main__":
         # Saving last batch / leftovers
         batch_index += 1
 
-        print('Last batch path: ' + os.path.join(dir_name, INTER_NAMES[0], 'outputs.torch'))
         # Saving all the intermediate/final inputs/outputs
         torch.save(outputs, os.path.join(dir_name, INTER_NAMES[0], 'outputs{}.torch'.format(batch_index)))
         torch.save(correct_outputs, os.path.join(dir_name, INTER_NAMES[1], 'correct_outputs{}.torch'.format(batch_index)))
