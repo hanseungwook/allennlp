@@ -232,6 +232,7 @@ if __name__ == "__main__":
             # Save outputs
             outputs.append(model_outputs)
 
+            # Transferring tensors back to cpu to saving
             model_layer_input[0] = tuple(elem.cpu() for elem in model_layer_input[0])
             ll_start_output[0] = ll_start_output[0].cpu() 
             ll_end_output[0] = ll_end_output[0].cpu()
