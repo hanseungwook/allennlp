@@ -342,10 +342,10 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     LOGGER.info('Creating training and validation dataset loaders')
     # Creating data loaders
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 16,  shuffle = False,
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = args.meta_batch_size,  shuffle = False,
         sampler = train_weighted_sampler)
-    correct_valid_loader = torch.utils.data.DataLoader(valid_correct_dataset, batch_size = 16,  shuffle = False)
-    incorrect_valid_loader = torch.utils.data.DataLoader(valid_incorrect_dataset, batch_size = 16,  shuffle = False)
+    correct_valid_loader = torch.utils.data.DataLoader(valid_correct_dataset, args.meta_batch_size,  shuffle = False)
+    incorrect_valid_loader = torch.utils.data.DataLoader(valid_incorrect_dataset, args.meta_batch_size,  shuffle = False)
 
     # Setting seed
     torch.manual_seed(args.seed)
@@ -357,7 +357,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     # Setting up meta model
     size_of_first_layer = train_dataset.get_size()
-    meta_model=FCMetaNet1(size_of_first_layer).cuda(args.cuda)
+    meta_model=FCMetaNet1(size_of_first_layer).cuda()
 
     # If saved state given, load into model
     if args.load_meta_model_from_saved_state:
@@ -450,8 +450,8 @@ def main():
     parser.add_argument('--validation_dir', help='Folder in which the meta validation intermedaite inputs/outputs are saved')
     parser.add_argument('--results_dir', default= './', help='Folder in which results will be saved')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',help='input batch size for testing (default: 1000)')
-    parser.add_argument('--batch-size', type=int, default=100, metavar='N',
-                        help='input batch size for testing (default: 1000)')
+    parser.add_argument('--test_batch-size', type=int, default=32, metavar='N',
+                        help='input batch size for testing (default: 32)')
     parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                         help='learning rate (default: 0.01)')
     parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
@@ -460,8 +460,8 @@ def main():
                         help='random seed (default: 10027)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
-    parser.add_argument('--meta_batch_size', type=int, default=1, metavar='MBS',
-                        help='size of batches to the meta classifier')
+    parser.add_argument('--meta_batch_size', type=int, default=16, metavar='MBS',
+                        help='size of batches to the meta classifier (default: 16)')
     parser.add_argument('--meta_train_num_epochs', type=int, default=50, metavar='metatrainepochs',
                         help='size of batches to the meta classifier')
     parser.add_argument('--load_meta_model_from_saved_state', default="")
