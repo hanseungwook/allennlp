@@ -56,7 +56,7 @@ class FCMetaNet(nn.Module):
         x = self.fc7(x)
 
         return F.log_softmax(x, dim = 1)
-
+# 1/4 the size of FCMetaNet
 class FCMetaNet1(nn.Module):
 
     def __init__(self, first_layer_size):
@@ -110,7 +110,7 @@ class FCMetaNet1(nn.Module):
         x = self.fc7(x)
 
         return F.log_softmax(x, dim = 1)
-
+# 1/8 the size of FCMetaNet
 class FCMetaNet2(nn.Module):
 
     def __init__(self, first_layer_size):
@@ -133,6 +133,61 @@ class FCMetaNet2(nn.Module):
         self.bn6 = nn.BatchNorm1d(8)
 
         self.fc7 = nn.Linear(8, 2)
+        self._relu = nn.ReLU()
+        self._dropout = nn.Dropout()
+
+
+    def forward(self, x):
+        x = self._relu(self.fc1(x))
+        x = self.bn1(x)
+        #x = F.dropout(x, training=self.training)
+        x = self._relu(self.fc2(x))
+        x = self.bn2(x)
+
+        x = self._dropout(x)
+
+        x = self._relu(self.fc3(x))
+        x = self.bn3(x)
+
+        #x = F.dropout(x, training=self.training)
+        x = self._relu(self.fc4(x))
+        x = self.bn4(x)
+        x = self._dropout(x)
+
+        x = self._relu(self.fc5(x))
+        x = self.bn5(x)
+        #x = F.dropout(x, training=self.training)
+
+        x = self._relu(self.fc6(x))
+        x = self.bn6(x)
+
+        x = self.fc7(x)
+
+        return F.log_softmax(x, dim = 1)
+
+# 1/2 of FCMetaNet
+class FCMetaNet3(nn.Module):
+
+    def __init__(self, first_layer_size):
+        super(FCMetaNet3, self).__init__()
+        self.fc1 = nn.Linear(first_layer_size, 2048) #input dimension both output and fc layer output
+        self.bn1 = nn.BatchNorm1d(2048)
+
+        self.fc2 = nn.Linear(2048, 3500)
+        self.bn2 = nn.BatchNorm1d(3500)
+        self.fc3 = nn.Linear(3500, 1024)
+        self.bn3 = nn.BatchNorm1d(1024)
+
+        self.fc4 = nn.Linear(1024, 256)
+        self.bn4 = nn.BatchNorm1d(256)
+
+        self.fc5 = nn.Linear(256, 256)
+        self.bn5 = nn.BatchNorm1d(256)
+
+        self.fc6 = nn.Linear(256, 32)
+        self.bn6 = nn.BatchNorm1d(32)
+
+        self.fc7 = nn.Linear(32, 2)
         self._relu = nn.ReLU()
         self._dropout = nn.Dropout()
 
