@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-from meta_model import FCMetaNet, FCMetaNet1, train_meta, test_meta_model
+from meta_model import FCMetaNet, FCMetaNet1, FCMetaNet2,  train_meta, test_meta_model
 import IPython
 
 
