@@ -165,6 +165,7 @@ class FCMetaNet2(nn.Module):
 
         return F.log_softmax(x, dim = 1)
 
+# 1/2 of FCMetaNet
 class FCMetaNet3(nn.Module):
 
     def __init__(self, first_layer_size):
