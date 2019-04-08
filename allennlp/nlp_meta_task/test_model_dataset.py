@@ -136,7 +136,12 @@ if __name__ == "__main__":
     except:
         logger.error("ERROR: Could not create outputs directory")
 
-    
+
+    num_correct = 0
+    num_incorrect = 0
+    num_correct_start = 0
+    num_correct_end = 0
+
     count = 0
     with torch.no_grad():
         outputs = []
@@ -189,11 +194,6 @@ if __name__ == "__main__":
 
             # Save outputs
             outputs.append(model_outputs)
-
-            num_correct = 0
-            num_correct_start = 0
-            num_correct_end = 0
-            num_incorrect = 0
 
             # Save in 4 categories/folders
             if span_start_acc and span_end_acc:
