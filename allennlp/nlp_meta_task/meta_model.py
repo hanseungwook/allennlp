@@ -86,7 +86,7 @@ class FCMetaNet1(nn.Module):
     def forward(self, x):
         x = self._relu(self.fc1(x))
         x = self.bn1(x)
-        #x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training)
         x = self._relu(self.fc2(x))
         x = self.bn2(x)
 
@@ -95,14 +95,14 @@ class FCMetaNet1(nn.Module):
         x = self._relu(self.fc3(x))
         x = self.bn3(x)
 
-        #x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training)
         x = self._relu(self.fc4(x))
         x = self.bn4(x)
         x = self._dropout(x)
 
         x = self._relu(self.fc5(x))
         x = self.bn5(x)
-        #x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training)
 
         x = self._relu(self.fc6(x))
         x = self.bn6(x)
@@ -114,7 +114,7 @@ class FCMetaNet1(nn.Module):
 class FCMetaNet2(nn.Module):
 
     def __init__(self, first_layer_size):
-        super(FCMetaNet1, self).__init__()
+        super(FCMetaNet2, self).__init__()
         self.fc1 = nn.Linear(first_layer_size, 512) #input dimension both output and fc layer output
         self.bn1 = nn.BatchNorm1d(512)
 
@@ -132,7 +132,7 @@ class FCMetaNet2(nn.Module):
         self.fc6 = nn.Linear(64, 8)
         self.bn6 = nn.BatchNorm1d(8)
 
-        self.fc7 = nn.Linear(8, 1)
+        self.fc7 = nn.Linear(8, 2)
         self._relu = nn.ReLU()
         self._dropout = nn.Dropout()
 
