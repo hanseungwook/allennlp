@@ -111,6 +111,60 @@ class FCMetaNet1(nn.Module):
 
         return F.log_softmax(x, dim = 1)
 
+class FCMetaNet2(nn.Module):
+
+    def __init__(self, first_layer_size):
+        super(FCMetaNet1, self).__init__()
+        self.fc1 = nn.Linear(first_layer_size, 512) #input dimension both output and fc layer output
+        self.bn1 = nn.BatchNorm1d(512)
+
+        self.fc2 = nn.Linear(512, 875)
+        self.bn2 = nn.BatchNorm1d(875)
+        self.fc3 = nn.Linear(875, 256)
+        self.bn3 = nn.BatchNorm1d(256)
+
+        self.fc4 = nn.Linear(256, 64)
+        self.bn4 = nn.BatchNorm1d(64)
+
+        self.fc5 = nn.Linear(64, 64)
+        self.bn5 = nn.BatchNorm1d(64)
+
+        self.fc6 = nn.Linear(64, 8)
+        self.bn6 = nn.BatchNorm1d(8)
+
+        self.fc7 = nn.Linear(8, 1)
+        self._relu = nn.ReLU()
+        self._dropout = nn.Dropout()
+
+
+    def forward(self, x):
+        x = self._relu(self.fc1(x))
+        x = self.bn1(x)
+        #x = F.dropout(x, training=self.training)
+        x = self._relu(self.fc2(x))
+        x = self.bn2(x)
+
+        x = self._dropout(x)
+
+        x = self._relu(self.fc3(x))
+        x = self.bn3(x)
+
+        #x = F.dropout(x, training=self.training)
+        x = self._relu(self.fc4(x))
+        x = self.bn4(x)
+        x = self._dropout(x)
+
+        x = self._relu(self.fc5(x))
+        x = self.bn5(x)
+        #x = F.dropout(x, training=self.training)
+
+        x = self._relu(self.fc6(x))
+        x = self.bn6(x)
+
+        x = self.fc7(x)
+
+        return F.log_softmax(x, dim = 1)
+
 def train_meta(model, device, train_loader, optimizer, epoch):
     model.train()
     correct = 0
