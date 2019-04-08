@@ -41,8 +41,8 @@ LOGGER.setLevel(logging.INFO)
 
 class IntermediateLayersInMemoryDataset(Dataset):
     def __init__(self, correct_files=None, correct_start_files=None, correct_end_files=None, 
-                 incorrect_files=None, input_files=None, percentage = 1.0, one_class = False, 
-                 max_dim=0, transform=None):
+                 incorrect_files=None, input_files=None, cor_percentage = 1.0, incor_percentage = 1.0,
+                 one_class = False, max_dim=0, transform=None):
         self.correct_running_count = 0
         self.correct_start_running_count = 0
         self.correct_end_running_count = 0
@@ -98,9 +98,9 @@ class IntermediateLayersInMemoryDataset(Dataset):
         if correct_files:
             loaded = torch.load(correct_files[0])
             all_indices = list(range(len(loaded)))
-            selected_indices_correct = np.random.choice(all_indices, size=int(percentage * len(loaded)), 
+            selected_indices_correct = np.random.choice(all_indices, size=int(cor_percentage * len(loaded)), 
                                                         replace=False)
-            self.correct_len = len(loaded)
+            self.correct_len = int(cor_percentage * len(loaded))
 
             for layer_index in range(len(correct_files)):
                 loaded = torch.load(correct_files[layer_index])
@@ -112,9 +112,9 @@ class IntermediateLayersInMemoryDataset(Dataset):
         if correct_start_files:
             loaded = torch.load(correct_start_files[0])
             all_indices = list(range(len(loaded)))
-            selected_indices_correct_start = np.random.choice(all_indices, size=int(percentage * len(loaded)),
+            selected_indices_correct_start = np.random.choice(all_indices, size=int(incor_percentage * len(loaded)),
                                                               replace = False)
-            self.correct_start_len = len(loaded)
+            self.correct_start_len = int(incor_percentage * len(loaded))
 
             for layer_index in range(len(correct_start_files)):
                 loaded = torch.load(correct_start_files[layer_index])
@@ -126,9 +126,9 @@ class IntermediateLayersInMemoryDataset(Dataset):
         if correct_end_files:
             loaded = torch.load(correct_end_files[0])
             all_indices = list(range(len(loaded)))
-            selected_indices_correct_end = np.random.choice(all_indices, size=int(percentage * len(loaded)),
+            selected_indices_correct_end = np.random.choice(all_indices, size=int(incor_percentage * len(loaded)),
                                                             replace = False)
-            self.correct_end_len = len(loaded)
+            self.correct_end_len = int(incor_percentage * len(loaded))
 
             for layer_index in range(len(correct_end_files)):
                 loaded = torch.load(correct_end_files[layer_index])
@@ -140,9 +140,9 @@ class IntermediateLayersInMemoryDataset(Dataset):
         if incorrect_files:
             loaded = torch.load(incorrect_files[0])
             all_indices = list(range(len(loaded)))
-            selected_indices_incorrect = np.random.choice(all_indices, size=int(percentage * len(loaded)),
+            selected_indices_incorrect = np.random.choice(all_indices, size=int(incor_percentage * len(loaded)),
                                                           replace = False)
-            self.incorrect_len = len(loaded)
+            self.incorrect_len = int(incor_percentage * len(loaded))
 
             for layer_index in range(len(incorrect_files)):
                 loaded = torch.load(incorrect_files[layer_index])
@@ -292,7 +292,8 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     # Create training dataset
     train_dataset = IntermediateLayersInMemoryDataset(correct_files=train_correct_files, incorrect_files=train_incorrect_files,
-                                                      input_files=train_input_files, one_class='both')
+                                                      input_files=train_input_files, cor_percentage=args.cor_percentage, 
+                                                      incor_percentage=args.incor_percentage, one_class='both')
     valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_files=valid_correct_files, input_files=valid_input_files,
                                                               one_class='correct')
     valid_incorrect_dataset = IntermediateLayersInMemoryDataset(incorrect_files=valid_incorrect_files, 
@@ -465,8 +466,12 @@ def main():
     parser.add_argument('--meta_train_num_epochs', type=int, default=50, metavar='metatrainepochs',
                         help='size of batches to the meta classifier')
     parser.add_argument('--load_meta_model_from_saved_state', default="")
-    parser.add_argument('--cuda', type=int, default=-1)
-
+    parser.add_argument('--cuda', type=int, default=-1,
+                        help='CUDA device to use')
+    parser.add_argument('--cor_percentage', type=float, default=1.0,
+                        help='Proportion of correct labels to include in the meta training dataset')
+    parser.add_argument('--incor_percentage', type=float, default=1.0,
+                        help='Proportion of incorrect labels to include in the meta training dataset')
     args = parser.parse_args()
     device = torch.device(args.cuda)
 
