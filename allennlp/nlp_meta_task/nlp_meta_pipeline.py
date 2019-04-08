@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
-from meta_model import FCMetaNet, FCMetaNet1, train_meta, test_meta_model
+from meta_model import FCMetaNet, FCMetaNet1, FCMetaNet2, FCMetaNet3, train_meta, test_meta_model
 import IPython
 
 
@@ -357,7 +357,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     # Setting up meta model
     size_of_first_layer = train_dataset.get_size()
-    meta_model=FCMetaNet(size_of_first_layer).cuda()
+    meta_model=FCMetaNet3(size_of_first_layer).cuda()
 
     # If saved state given, load into model
     if args.load_meta_model_from_saved_state:
