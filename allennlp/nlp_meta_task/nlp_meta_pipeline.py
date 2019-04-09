@@ -20,10 +20,9 @@ import IPython
 
 
 ### GLOBAL PARAMETERS
-CUDA_DEVICE = torch.device('cpu')
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
-#LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['model_layer_outputs.torch']
+LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
+#LAYER_NAMES = ['model_layer_outputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -240,14 +239,17 @@ class IntermediateLayersInMemoryDataset(Dataset):
 # Processes the data (tensor) of the layer to reshape and etc given the layer number
 def process_layer_data(data, layer_no):
     processed_data = data
+    # Model layer input
     if len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_inputs.torch':
         if layer_no == 0:
             processed_data = data[0].reshape(data[0].shape[0] * data[0].shape[1] * data[0].shape[2])
     
+    # Model layer output
     elif len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_outputs.torch':
         if layer_no == 0:
             processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])
 
+    # Last layer start and end layers
     elif len(LAYER_NAMES) == 2:
         if layer_no == 0 or layer_no == 1:
             processed_data = data.view(data.shape[1])
@@ -303,19 +305,22 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     # Creating padding and concatenation of layer data for last layer outputs
     LOGGER.info('Creating padding and concatenation')
-    # layer_idx_list = [0, 1] # For span_start and span_end last layers
-    # max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
-    #               valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-    # train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
-    # valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
-    # valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
 
-    layer_idx_list = [0] # For model_input layer
+    # Creating dataset for last layer start and end outputs 
+    layer_idx_list = [0, 1] # For span_start and span_end last layers
     max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
                   valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-    train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
-    valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
-    valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
+    train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+
+    # Creating dataset for model output layer
+    # layer_idx_list = [0] # For model_input layer
+    # max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
+    #               valid_incorrect_dataset.calc_max_dim(layer_idx_list))
+    # train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
+    # valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
+    # valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
 
     # Get counts and make weights for balancing training samples
     correct_count = train_dataset.get_correct_len()
