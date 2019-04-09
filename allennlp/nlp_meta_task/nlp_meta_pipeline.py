@@ -395,6 +395,22 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     best_total_diff_adj_geo_acc_correct = 0
     best_total_diff_adj_geo_acc_error = 0
 
+    # Test
+    if args.load_meta_model_from_saved_state:
+        LOGGER.info('Evaluating test dataset')
+
+        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
+
+        total_acc = error_acc + correct_acc
+        total_geo_acc = np.sqrt(error_acc * correct_acc)
+        total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
+
+        accuracies_file.write(str(epoch) + " " + str(train_acc) + " " + " " + str(correct_acc) + " " + str(error_acc)+ " " + str(total_acc) + " " +  str(total_geo_acc) + " " + str(total_diff_adj_geo_acc)+"\n")
+        accuracies_file.close()
+
+        return correct_acc, error_acc
+
+    # Train + Test
     for epoch in range(1,args.meta_train_num_epochs+1):
         LOGGER.info('Training: Starting epoch {}'.format(epoch))
         train_acc = train_meta(meta_model, device, train_loader, meta_optimizer, epoch)
