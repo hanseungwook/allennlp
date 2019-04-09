@@ -195,7 +195,7 @@ class FCMetaNet3(nn.Module):
     def forward(self, x):
         x = self._relu(self.fc1(x))
         x = self.bn1(x)
-        #x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training)
         x = self._relu(self.fc2(x))
         x = self.bn2(x)
 
@@ -204,14 +204,14 @@ class FCMetaNet3(nn.Module):
         x = self._relu(self.fc3(x))
         x = self.bn3(x)
 
-        #x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training)
         x = self._relu(self.fc4(x))
         x = self.bn4(x)
         x = self._dropout(x)
 
         x = self._relu(self.fc5(x))
         x = self.bn5(x)
-        #x = F.dropout(x, training=self.training)
+        x = F.dropout(x, training=self.training)
 
         x = self._relu(self.fc6(x))
         x = self.bn6(x)
