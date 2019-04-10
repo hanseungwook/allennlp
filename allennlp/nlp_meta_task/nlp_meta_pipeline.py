@@ -106,6 +106,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 for item_idx in selected_indices_correct:
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
                     self.X_data[layer_index].append(processed_data)
+            
+            del loaded
 
         # Loading and adding correct start intermediates/outputs to data
         if correct_start_files:
@@ -120,6 +122,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 for item_idx in selected_indices_correct_start:
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
                     self.X_data[layer_index].append(processed_data)
+            
+            del loaded
 
         # Loading and adding correct end intermediates/outputs to data
         if correct_end_files:
@@ -135,6 +139,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
                     self.X_data[layer_index].append(processed_data)
 
+            del loaded
+
         # Loading and adding incorrect intermediates/outputs to data
         if incorrect_files:
             loaded = torch.load(incorrect_files[0])
@@ -148,6 +154,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 for item_idx in selected_indices_incorrect:
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
                     self.X_data[layer_index].append(processed_data)
+            
+            del loaded
 
         # Defining dim_size for 1D vector
         self.dim_size = self.X_data[0][0].shape[0]
