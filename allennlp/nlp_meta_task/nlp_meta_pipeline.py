@@ -21,8 +21,8 @@ import IPython
 
 ### GLOBAL PARAMETERS
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-#LAYER_NAMES = ['model_layer_outputs.torch']
+#LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
+LAYER_NAMES = ['model_layer_outputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -433,7 +433,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
                 os.remove(old_total_acc_file_name)
 
             old_total_acc_file_name = os.path.join(args.results_dir, 'best_total_acc_valid_epoch_'+str(epoch)+'.pth')
-            torch.save(meta_model.state_dict(), old_total_acc_file_name)
+            torch.save(meta_model, old_total_acc_file_name)
 
         if total_diff_adj_geo_acc > best_total_diff_adj_geo_acc:
             best_total_diff_adj_geo_acc = total_diff_adj_geo_acc
@@ -445,7 +445,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
             old_diff_adj_geo_acc_file_name_created = True
             old_diff_adj_geo_acc_file_name = os.path.join(args.results_dir, 'best_diff_adj_geo_acc_valid_epoch_' + str(epoch) + '.pth')
-            torch.save(meta_model.state_dict(), old_diff_adj_geo_acc_file_name)
+            torch.save(meta_model, old_diff_adj_geo_acc_file_name)
 
         
         print("Geo dif adj valid mean acc: " + str(total_diff_adj_geo_acc))
