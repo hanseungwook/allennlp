@@ -22,7 +22,7 @@ import IPython
 ### GLOBAL PARAMETERS
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['model_layer_outputs.torch']
+LAYER_NAMES = ['model_layer_inputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -175,8 +175,12 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         for layer in range(len(self.X_data)):
             Xs_to_return.append(self.X_data[layer][idx].float())
-        
-        Xs_to_return = (Xs_to_return[0])
+
+        cur_item = Xs_to_return[0]
+        padded = torch.zeros(self.max_dim)
+        cur_dim = cur_item.shape[0]
+        padded[:cur_dim] = cur_item
+        Xs_to_return = (padded)
 
         if self.Y_data[idx] == 1:
             self.correct_running_count += 1
@@ -192,8 +196,13 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         return self.max_dim
         
-    # Pad data at given layer indices with the maximum length of tensor in the dataset
-    def pad_concat_layers(self, pad_idx_list, cat_idx_list=None, max_dim=0):
+
+    def set_max_dim(self, max_dim):
+        self.max_dim = max_dim
+
+    # Concatenate layers
+    def concat_layers(self, cat_idx_list=None):
+        """
         for layer_idx in pad_idx_list:
             for i in range(len(self.X_data[layer_idx])):
                 cur_item = self.X_data[layer_idx][i]
@@ -201,6 +210,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 cur_dim = cur_item.shape[0]
                 padded[:cur_dim] = cur_item
                 self.X_data[layer_idx][i] = padded
+        """
 
         # If concatenating layer indices given, then concat
         if cat_idx_list:
@@ -310,9 +320,13 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     layer_idx_list = [0, 1] # For span_start and span_end last layers
     max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
                   valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-    train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
-    valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
-    valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list, cat_idx_list=layer_idx_list)
+    train_dataset.set_max_dim(max_dim)
+    valid_correct_dataset.set_max_dim(max_dim)
+    valid_incorrect_dataset.set_max_dim(max_dim)
+
+    train_dataset.concat_layers(cat_idx_list=layer_idx_list)
+    valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list)
+    valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list)
 
     # Creating dataset for model output layer
     # layer_idx_list = [0] # For model_input layer
