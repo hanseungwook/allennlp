@@ -10,13 +10,23 @@ Use the below deployment with the following configurations:
 Framework: Pytorch 1.0 + fastai 1.0 (CUDA 10.0)  
 Check 'Install NVIDIA GPU driver automatically on first startup'  
 
-# 1. Splitting up data for different usages
+# 1. Splitting up data for different usages / Extracting data from Squad 2.0
 ```bash
 cd allennlp/allennlp/nlp_meta_task/
 python3 split_data.py 
 ```
 
-# 1. Running the base model to retrieve intermediate outputs
+```bash
+cd allennlp/allennlp/nlp_meta_task/
+python3 extract_squad2.0.py --dataset_filepath={relative path to dataset to extract from} --output_file={name of output file to save extracted dataset}
+```
+
+Example command
+```bash
+python3 extract_squad2.0.py --dataset_filepath=../../../squad_datasets/train-v2.0.json --output_file=squad_v2.0_train_pos.json
+```
+
+# 2. Running the base model to retrieve intermediate outputs
 ## Installing AllenNLP Library
 ```bash
 pip install allennlp --user
