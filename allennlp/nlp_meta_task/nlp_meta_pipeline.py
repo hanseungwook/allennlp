@@ -204,9 +204,24 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         return self.max_dim
         
-
+    # Set maximum dimension for padding
     def set_max_dim(self, max_dim):
         self.max_dim = max_dim
+
+    # Filter out features over the max_dim
+    def filter_over_dim(self, layer_idx_list):
+        for layer_idx in layer_idx_list:
+            over_max_dim_idx = []
+
+            for i in range(len(self.X_data[layer_idx])):
+                cur_item = self.X_data[layer_idx][i]
+                cur_dim = cur_item.shape[0]
+
+                if cur_dim > self.max_dim:
+                    over_max_dim_idx.append(i)
+            
+            for del_idx in sorted(over_max_dim_idx, reverse=True):
+                del self.X_data[layer_idx][del_idx]
 
     # Concatenate layers
     def concat_layers(self, cat_idx_list=None):
@@ -310,8 +325,9 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     LOGGER.info('Creating training and validation datasets')
 
-    # Create training dataset
-    train_dataset = IntermediateLayersInMemoryDataset(correct_files=train_correct_files, incorrect_files=train_incorrect_files,
+    # Create training and validation dataset (training, only if we are not loading from saved state)
+    if not args.load_meta_model_from_saved_state:
+        train_dataset = IntermediateLayersInMemoryDataset(correct_files=train_correct_files, incorrect_files=train_incorrect_files,
                                                       input_files=train_input_files, cor_percentage=args.cor_percentage, 
                                                       incor_percentage=args.incor_percentage, one_class='both')
     valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_files=valid_correct_files, input_files=valid_input_files,
@@ -321,57 +337,65 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     LOGGER.info('Finished creating training and validation datasets')
 
-    # Creating padding and concatenation of layer data for last layer outputs
-    LOGGER.info('Creating padding and concatenation')
-
+    # Setting layer idx depending on which intermediate layer
+    if LAYER_NAMES[0] == 'model_layer_outputs.torch' or LAYER_NAMES[0] = 'model_layer_inputs.torch':
+        layer_idx_list = [0] 
+    
     # Creating dataset for last layer start and end outputs 
-    layer_idx_list = [0, 1] # For span_start and span_end last layers
-    max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
+    elif LAYER_NAMES[0] = 'span_start_outputs.torch' and LAYER_NAMES[1] = 'span_end_outputs.torch':        
+        layer_idx_list = [0, 1] # For span_start and span_end last layers
+    
+    if args.max_dim > 0:
+        max_dim = args.max_dim
+
+    else:
+        max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
                   valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-    train_dataset.set_max_dim(max_dim)
+    
+    LOGGER.info('Set max_dim to {}'.format(max_dim))
+
+
     valid_correct_dataset.set_max_dim(max_dim)
     valid_incorrect_dataset.set_max_dim(max_dim)
-
-    train_dataset.concat_layers(cat_idx_list=layer_idx_list)
-    valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list)
-    valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list)
-
-    # Creating dataset for model output layer
-    # layer_idx_list = [0] # For model_input layer
-    # max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
-    #               valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-    # train_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
-    # valid_correct_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
-    # valid_incorrect_dataset.pad_concat_layers(max_dim=max_dim, pad_idx_list=layer_idx_list)
-
-    # Get counts and make weights for balancing training samples
-    correct_count = train_dataset.get_correct_len()
-    incorrect_count = train_dataset.get_incorrect_len()
-    total_count = correct_count + incorrect_count
+    if not args.load_meta_model_from_saved_state:
+        # Setting maximum dimension and filtering
+        train_dataset.set_max_dim(max_dim)
+        train_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
     
-    y_vals = train_dataset.get_y_data()
+        LOGGER.info('Filtering features that are greater than (only for when loading meta model)')
+        valid_correct_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
+        valid_incorrect_dataset.filter_over_dim(layer_idx_list=layer_idx_list) 
 
-    correct_weight = float(total_count)/correct_count
-    incorrect_weight = float(total_count)/incorrect_count
-
-    train_weights = torch.zeros(total_count, dtype=torch.double)
-
-    for i in range(len(y_vals)):
-        if y_vals[i] == 0:
-            train_weights[i] = incorrect_weight
-        else:
-            train_weights[i] = correct_weight
     
-    correct_range = list(range(correct_count))
-    incorrect_range = list(range(correct_count, total_count))
-    total_range = list(range(total_count))
+        # Get counts and make weights for balancing training samples
+        correct_count = train_dataset.get_correct_len()
+        incorrect_count = train_dataset.get_incorrect_len()
+        total_count = correct_count + incorrect_count
+        
+        y_vals = train_dataset.get_y_data()
 
-    train_weighted_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_weights, total_count)
+        correct_weight = float(total_count)/correct_count
+        incorrect_weight = float(total_count)/incorrect_count
 
-    LOGGER.info('Creating training and validation dataset loaders')
-    # Creating data loaders
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = args.meta_batch_size,  shuffle = False,
-        sampler = train_weighted_sampler)
+        train_weights = torch.zeros(total_count, dtype=torch.double)
+
+        for i in range(len(y_vals)):
+            if y_vals[i] == 0:
+                train_weights[i] = incorrect_weight
+            else:
+                train_weights[i] = correct_weight
+        
+        correct_range = list(range(correct_count))
+        incorrect_range = list(range(correct_count, total_count))
+        total_range = list(range(total_count))
+
+        train_weighted_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_weights, total_count)
+
+        LOGGER.info('Creating training and validation dataset loaders')
+        # Creating data loaders
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = args.meta_batch_size,  shuffle = False,
+            sampler = train_weighted_sampler)
+
     correct_valid_loader = torch.utils.data.DataLoader(valid_correct_dataset, args.meta_batch_size,  shuffle = False)
     incorrect_valid_loader = torch.utils.data.DataLoader(valid_incorrect_dataset, args.meta_batch_size,  shuffle = False)
 
@@ -384,7 +408,13 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     LOGGER.info('Setting up meta network')
 
     # Setting up meta model
-    size_of_first_layer = train_dataset.get_size()
+    if not args.load_meta_model_from_saved_state:
+        size_of_first_layer = train_dataset.get_size()
+    else:
+        size_of_first_layer = args.max_dim
+    
+    if args.model_class == 0:
+        meta_model = FCMetaNet()
     meta_model=FCMetaNet3(size_of_first_layer).cuda()
 
     # If saved state given, load into model
@@ -417,7 +447,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     best_total_diff_adj_geo_acc_correct = 0
     best_total_diff_adj_geo_acc_error = 0
 
-    # Test
+    # Test for loading meta model from saved state
     if args.load_meta_model_from_saved_state:
         LOGGER.info('Evaluating test dataset')
 
@@ -515,6 +545,10 @@ def main():
                         help='Proportion of correct labels to include in the meta training dataset')
     parser.add_argument('--incor_percentage', type=float, default=1.0,
                         help='Proportion of incorrect labels to include in the meta training dataset')
+    parser.add_argument('--max_dim', type=int, default=0,
+                        help='Manually setting the maximum dimension of features / first layer size of meta model')
+    parser.add_argument('--model_class', type=int, default=1,
+                        help='FCMetaNet class number')
     args = parser.parse_args()
     device = torch.device(args.cuda)
 
