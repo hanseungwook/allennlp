@@ -10,6 +10,12 @@ Use the below deployment with the following configurations:
 Framework: Pytorch 1.0 + fastai 1.0 (CUDA 10.0)  
 Check 'Install NVIDIA GPU driver automatically on first startup'  
 
+# 1. Splitting up data for different usages
+```bash
+cd allennlp/allennlp/nlp_meta_task/
+python3 split_data.py 
+```
+
 # 1. Running the base model to retrieve intermediate outputs
 ## Installing AllenNLP Library
 ```bash
@@ -31,18 +37,18 @@ CML Research/squad_datasets
 This assumes that you have cloned my **forked** AllenNLP git repository.  
   
 ```bash
-cd allennlp/allennlp/training/
+cd allennlp/allennlp/nlp_meta_task/
 python3 test_model_batch.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
 ```
 
 If you need to separate the intermediate outputs into batches b/c of memory error, the following code:
 ```bash
-python3 test_model_batch.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
+python3 test_model_batch.py --weights_file={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --output_dir={relative path to output folder to create} --cuda={cuda device num or cpu}
 ```
 
 Example command
 ```bash
-python3 test_model.py --weights_dir=../../../serialized_models/test4/best.th --serialization_dir=../../../serialized_models/test4/ --val_filepath../../../squad_datasets/dataset_val_q.json --cuda=0
+python3 test_model.py --weights_file=../../../serialized_models/test4/best.th --serialization_dir=../../../serialized_models/test4/ --val_filepath../../../squad_datasets/dataset_val_q.json --output_dir=../../../outputs/train_outputs/ --cuda=0
 ```  
 
 **Note**: Depending on the existence of GPU, need to change the 'cuda' parameter in test_model.py  
@@ -59,7 +65,7 @@ CML Research/nlp_outputs/val_outputs
 
 ## Running the meta network
 ```bash
-cd allennlp/allennlp/training/
+cd allennlp/allennlp/nlp_meta_task/
 python3 nlp_meta_pipeline.py --training_dir={relative path to training data folder for meta network} --validation_dir={relative path to validation data for meta network} --results_dir={relative path of folder to which the results will be saved}
 ```
 
