@@ -204,6 +204,10 @@ if __name__ == "__main__":
         instance_count = 0
         batch_index = 0
         
+        num_correct = 0
+        num_correct_start = 0
+        num_correct_end = 0
+        num_incorrect = 0
 
         for instance in pbar(val_dataset):
             # Increment instance count
@@ -246,6 +250,7 @@ if __name__ == "__main__":
                 correct_ll_end_outputs.append(ll_end_output[0])
                 correct_model_layer_inputs.append(model_layer_input[0])
                 correct_model_layer_outputs.append(model_layer_output[0])
+                num_correct += 1
             
             elif span_start_acc and not span_end_acc:
                 correct_start_outputs.append(model_outputs)
@@ -254,6 +259,7 @@ if __name__ == "__main__":
                 correct_start_ll_end_outputs.append(ll_end_output[0])
                 correct_start_model_layer_inputs.append(model_layer_input[0])
                 correct_start_model_layer_outputs.append(model_layer_output[0])
+                num_correct_start += 1 
 
             elif not span_start_acc and span_end_acc:
                 correct_end_outputs.append(model_outputs)
@@ -262,6 +268,7 @@ if __name__ == "__main__":
                 correct_end_ll_end_outputs.append(ll_end_output[0])
                 correct_end_model_layer_inputs.append(model_layer_input[0])
                 correct_end_model_layer_outputs.append(model_layer_output[0])
+                num_correct_end += 1
             
             else:
                 incorrect_outputs.append(model_outputs)
@@ -270,45 +277,13 @@ if __name__ == "__main__":
                 incorrect_ll_end_outputs.append(ll_end_output[0])
                 incorrect_model_layer_inputs.append(model_layer_input[0])
                 incorrect_model_layer_outputs.append(model_layer_output[0])
+                num_incorrect += 1
 
             ll_start_output.clear()
             ll_end_output.clear()
             model_layer_input.clear()
             model_layer_output.clear()
-            
-            """
-            # Saving all the intermediate/final inputs/outputs
-            print(os.path.join(dir_name, INTER_NAMES[0], 'outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[1], 'correct_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[2], 'correct_start_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[3], 'correct_end_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[4], 'incorrect_outputs{}.torch'.format(batch_index)))
 
-            print(os.path.join(dir_name, INTER_NAMES[5], 'correct_inputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[6], 'correct_start_inputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[7], 'correct_end_inputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[8], 'incorrect_inputs{}.torch'.format(batch_index)))
-
-            print(os.path.join(dir_name, INTER_NAMES[9], 'correct_ll_start_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[10], 'correct_start_ll_start_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[11], 'correct_end_ll_start_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[12], 'incorrect_ll_start_outputs{}.torch'.format(batch_index)))
-
-            print(os.path.join(dir_name, INTER_NAMES[13], 'correct_ll_end_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[14], 'correct_start_ll_end_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[15], 'correct_end_ll_end_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[16], 'incorrect_ll_end_outputs{}.torch'.format(batch_index)))
-            
-            print(os.path.join(dir_name, INTER_NAMES[17], 'correct_model_layer_inputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[18], 'correct_start_model_layer_inputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[19], 'correct_end_model_layer_inputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[20], 'incorrect_model_layer_inputs{}.torch'.format(batch_index)))
-
-            print(os.path.join(dir_name, INTER_NAMES[21], 'correct_model_layer_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[22], 'correct_start_model_layer_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[23], 'correct_end_model_layer_outputs{}.torch'.format(batch_index)))
-            print(os.path.join(dir_name, INTER_NAMES[24], 'incorrect_model_layer_outputs{}.torch'.format(batch_index)))
-            """
 
             if instance_count % 10000 == 0:
                 batch_index += 1
@@ -377,6 +352,9 @@ if __name__ == "__main__":
                 correct_end_inputs.clear()
                 incorrect_inputs.clear()
 
+        print('Correct: {}, Start Correct: {}, End Correct: {}, Incorrect: {}\n'.format(
+              num_correct, num_correct_start, num_correct_end, num_incorrect))
+              
         # Saving last batch / leftovers
         batch_index += 1
 
