@@ -414,6 +414,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     else:
         size_of_first_layer = args.max_dim
     
+    LOGGER.info('meta model size of first layer: {}'.format(size_of_first_layer))
     if args.model_class == 0:
         meta_model = FCMetaNet(size_of_first_layer).cuda()
     elif args.model_class == 1:
