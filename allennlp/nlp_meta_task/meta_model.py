@@ -2,6 +2,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import IPython
+import logging
+
+# Setting up logger
+LOGGER = logging.getLogger(__name__)
+out_hdlr = logging.StreamHandler(sys.stdout)
+out_hdlr.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+out_hdlr.setLevel(logging.INFO)
+LOGGER.addHandler(out_hdlr)
+LOGGER.setLevel(logging.INFO)
 
 class FCMetaNet(nn.Module):
 
@@ -229,8 +238,8 @@ def train_meta(model, device, train_loader, optimizer, epoch):
         # inputs = torch.Tensor(len(data), data[0].shape[0], data[0].shape[1])
         # data[0] = data[0].to(device)
         # torch.cat(data, out=inputs)
-            
         data = data.to(device)
+        LOGGER.info(data.shape)
         target = target.to(device)
         optimizer.zero_grad()
         output = model(data)
