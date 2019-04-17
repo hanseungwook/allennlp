@@ -105,6 +105,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 loaded = torch.load(correct_files[layer_index])
                 for item_idx in selected_indices_correct:
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
+                    LOGGER.info('processed data shape: {}'.format(processed_data.shape))
+                    LOGGER.info('processed data', processed_data,)
                     self.X_data[layer_index].append(processed_data)
             
             del loaded
