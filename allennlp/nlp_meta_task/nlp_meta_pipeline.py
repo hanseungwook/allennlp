@@ -338,11 +338,11 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     LOGGER.info('Finished creating training and validation datasets')
 
     # Setting layer idx depending on which intermediate layer
-    if LAYER_NAMES[0] == 'model_layer_outputs.torch' or LAYER_NAMES[0] = 'model_layer_inputs.torch':
+    if LAYER_NAMES[0] == 'model_layer_outputs.torch' or LAYER_NAMES[0] == 'model_layer_inputs.torch':
         layer_idx_list = [0] 
     
     # Creating dataset for last layer start and end outputs 
-    elif LAYER_NAMES[0] = 'span_start_outputs.torch' and LAYER_NAMES[1] = 'span_end_outputs.torch':        
+    elif LAYER_NAMES[0] == 'span_start_outputs.torch' and LAYER_NAMES[1] == 'span_end_outputs.torch':        
         layer_idx_list = [0, 1] # For span_start and span_end last layers
     
     if args.max_dim > 0:
@@ -415,8 +415,13 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         size_of_first_layer = args.max_dim
     
     if args.model_class == 0:
-        meta_model = FCMetaNet()
-    meta_model=FCMetaNet3(size_of_first_layer).cuda()
+        meta_model = FCMetaNet(size_of_first_layer).cuda()
+    elif args.model_class == 1:
+        meta_model = FCMetaNet1(size_of_first_layer).cuda()
+    elif args.model_class == 2:
+        meta_model = FCMetaNet2(size_of_first_layer).cuda() 
+    elif args.model_class == 3:
+        meta_model = FCMetaNet3(size_of_first_layer).cuda()
 
     # If saved state given, load into model
     if args.load_meta_model_from_saved_state:
