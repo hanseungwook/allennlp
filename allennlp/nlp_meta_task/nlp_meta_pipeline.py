@@ -347,7 +347,6 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     
     if args.max_dim > 0:
         max_dim = args.max_dim
-
     else:
         max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
                   valid_incorrect_dataset.calc_max_dim(layer_idx_list))
@@ -357,16 +356,18 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     valid_correct_dataset.set_max_dim(max_dim)
     valid_incorrect_dataset.set_max_dim(max_dim)
-    if not args.load_meta_model_from_saved_state:
-        # Setting maximum dimension and filtering
-        train_dataset.set_max_dim(max_dim)
-        train_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
-    
+
+    if args.load_meta_model_from_saved_state:
         LOGGER.info('Filtering features that are greater than (only for when loading meta model)')
+        train_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
         valid_correct_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
         valid_incorrect_dataset.filter_over_dim(layer_idx_list=layer_idx_list) 
 
-    
+    if not args.load_meta_model_from_saved_state:
+        # Setting maximum dimension and filtering
+        train_dataset.set_max_dim(max_dim)
+        
+        LOGGER.info('Calculating weights')
         # Get counts and make weights for balancing training samples
         correct_count = train_dataset.get_correct_len()
         incorrect_count = train_dataset.get_incorrect_len()
