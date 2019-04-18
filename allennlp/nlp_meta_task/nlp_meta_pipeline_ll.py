@@ -187,7 +187,6 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         cur_item = Xs_to_return[0]
         padded = torch.zeros(self.max_dim)
-        LOGGER.info('max_dim in getitem: {}'.format(self.max_dim))
         cur_dim = cur_item.shape[0]
         padded[:cur_dim] = cur_item
         Xs_to_return = (padded)
