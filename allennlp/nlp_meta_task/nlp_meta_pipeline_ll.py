@@ -351,7 +351,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_start_files=valid_correct_start_files, input_files=valid_input_files,
                                                               one_class='correct_start')
     valid_incorrect_dataset = IntermediateLayersInMemoryDataset(correct_end_files=valid_correct_end_files, 
-                                                                input_files=valid_input_files, one_class='incorrect')
+                                                                input_files=valid_input_files, one_class='correct_end')
 
     LOGGER.info('Finished creating training and validation datasets')
 
