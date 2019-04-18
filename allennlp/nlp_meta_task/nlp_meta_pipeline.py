@@ -53,7 +53,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         self.incorrect_len = 0
 
         self.X_data = []
-        self.dim_size = 0
+        #self.dim_size = 0
         self.data_class = None
         self.max_dim = 0
 
@@ -105,8 +105,6 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 loaded = torch.load(correct_files[layer_index])
                 for item_idx in selected_indices_correct:
                     processed_data = process_layer_data(loaded[item_idx], layer_index)
-                    LOGGER.info('processed data shape: {}'.format(processed_data.shape))
-                    LOGGER.info('processed data', processed_data,)
                     self.X_data[layer_index].append(processed_data)
             
             del loaded
@@ -160,7 +158,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             del loaded
 
         # Defining dim_size for 1D vector
-        self.dim_size = self.X_data[0][0].shape[0]
+        #self.dim_size = self.X_data[0][0].shape[0]
         self.total_len = self.correct_len + self.correct_start_len + \
                          self.correct_end_len + self.incorrect_len
 
@@ -188,6 +186,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
         cur_item = Xs_to_return[0]
         padded = torch.zeros(self.max_dim)
+        LOGGER.info('max_dim in getitem: {}'.format(self.max_dim))
         cur_dim = cur_item.shape[0]
         padded[:cur_dim] = cur_item
         Xs_to_return = (padded)
@@ -248,7 +247,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             del self.X_data[cat2]
         
         # Set dim_size since new tensors have been created
-        self.dim_size = self.X_data[0][0].shape[0]
+        # self.dim_size = self.X_data[0][0].shape[0]
 
     def get_correct_len(self):
         return self.correct_len
@@ -269,7 +268,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         return self.X_data.shape()[0]
 
     def get_size(self):
-        return self.dim_size
+        return self.max_dim
 
 # Processes the data (tensor) of the layer to reshape and etc given the layer number
 def process_layer_data(data, layer_no):

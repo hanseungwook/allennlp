@@ -240,7 +240,7 @@ def train_meta(model, device, train_loader, optimizer, epoch):
         # data[0] = data[0].to(device)
         # torch.cat(data, out=inputs)
         data = data.to(device)
-        LOGGER.info(data.shape)
+        LOGGER.info('Data shape: {}'.format(data.shape))
         target = target.to(device)
         optimizer.zero_grad()
         output = model(data)
