@@ -343,13 +343,25 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     train_data_class = 'correct_start_end'
     # Create training and validation dataset (training, only if we are not loading from saved state)
     if not args.load_meta_model_from_saved_state:
-        train_dataset = IntermediateLayersInMemoryDataset(correct_start_files=train_correct_start_files, correct_end_files=train_correct_end_files,
-                                                      input_files=train_input_files, cor_percentage=args.cor_percentage, 
-                                                      incor_percentage=args.incor_percentage, one_class='correct_start_end')
-    valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_start_files=valid_correct_start_files, input_files=valid_input_files,
-                                                              one_class='correct_start')
-    valid_incorrect_dataset = IntermediateLayersInMemoryDataset(correct_end_files=valid_correct_end_files, 
-                                                                input_files=valid_input_files, one_class='correct_end')
+        if train_data_class == 'correct_start_end':
+            train_dataset = IntermediateLayersInMemoryDataset(correct_start_files=train_correct_start_files, correct_end_files=train_correct_end_files,
+                                                        input_files=train_input_files, cor_percentage=args.cor_percentage, 
+                                                        incor_percentage=args.incor_percentage, one_class='correct_start_end')
+        elif train_data_class == 'both':
+            train_dataset = IntermediateLayersInMemoryDataset(correct_files=train_correct_files, incorrect_files=train_incorrect_files,
+                                                        input_files=train_input_files, cor_percentage=args.cor_percentage, 
+                                                        incor_percentage=args.incor_percentage, one_class='both')
+    
+    if train_data_class == 'correct_start_end':
+        valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_start_files=valid_correct_start_files, input_files=valid_input_files,
+                                                                one_class='correct_start')
+        valid_incorrect_dataset = IntermediateLayersInMemoryDataset(correct_end_files=valid_correct_end_files, 
+                                                                    input_files=valid_input_files, one_class='correct_end')
+    elif train_data_class == 'both':
+        valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_files=valid_correct_files, input_files=valid_input_files,
+                                                                one_class='correct')
+        valid_incorrect_dataset = IntermediateLayersInMemoryDataset(incorrect_files=valid_incorrect_files, 
+                                                                    input_files=valid_input_files, one_class='incorrect')
 
     LOGGER.info('Finished creating training and validation datasets')
 
