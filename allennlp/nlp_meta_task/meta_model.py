@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import IPython
 import logging
 import sys
+import os
 
 # Setting up logger
 LOGGER = logging.getLogger(__name__)
@@ -261,16 +262,21 @@ def train_meta(model, device, train_loader, optimizer, epoch):
     print(correct_percent)
     return correct_percent
 
-def test_meta_model(model, device, error_test_loader, correct_test_loader, optimizer, epoch):
+def test_meta_model(model, device, error_test_loader, correct_test_loader, optimizer, epoch, results_dir):
     model.eval()
     test_loss = 0
     correct = 0
     accuracies = []
+
+    
+
     with torch.no_grad():
         test_loss = 0
         correct = 0
         correct_acc = 0
         error_acc = 0
+        meta_correct_outputs = []
+        meta_incorrect_outputs = []
 
         for batch_idx, (data, target) in enumerate(correct_test_loader):
             #only need to put tensors in position 0 onto device (?)
@@ -286,6 +292,13 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
             test_loss += criterion(output, target)
             pred = output.max(1, keepdim=True)[1]
             correct += pred.eq(target.view_as(pred)).sum().item()
+
+            meta_correct_outputs.append(output)
+
+        # Save meta correct outputs and clear correct outputs list
+        meta_correct_outputs_filename = os.path.join(results_dir, 'meta_correct_outputs.torch')
+        torch.save(meta_correct_outputs, meta_correct_outputs_filename)
+        meta_correct_outputs.clear()            
 
 
         test_loss /= len(correct_test_loader.dataset)
@@ -310,6 +323,12 @@ def test_meta_model(model, device, error_test_loader, correct_test_loader, optim
             test_loss += criterion(output, target)
             pred = output.max(1, keepdim=True)[1]
             correct += pred.eq(target.view_as(pred)).sum().item()
+            meta_incorrect_outputs.append(output)
+
+        # Save meta correct outputs and clear correct outputs list
+        meta_incorrect_outputs_filename = os.path.join(results_dir, 'meta_incorrect_outputs.torch')
+        torch.save(meta_incorrect_outputs, meta_incorrect_outputs_filename)
+        meta_incorrect_outputs.clear()      
 
 
         test_loss /= len(error_test_loader.dataset)
