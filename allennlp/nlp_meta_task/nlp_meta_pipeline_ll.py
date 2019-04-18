@@ -342,7 +342,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     valid_input_files.append(args.training_dir + INCORRECT + INPUTS)
 
     LOGGER.info('Creating training and validation datasets')
-
+    train_data_class = 'correct_start_end'
     # Create training and validation dataset (training, only if we are not loading from saved state)
     if not args.load_meta_model_from_saved_state:
         train_dataset = IntermediateLayersInMemoryDataset(correct_start_files=train_correct_start_files, correct_end_files=train_correct_end_files,
@@ -388,8 +388,16 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         
         LOGGER.info('Calculating weights')
         # Get counts and make weights for balancing training samples
-        correct_count = train_dataset.get_correct_len()
-        incorrect_count = train_dataset.get_incorrect_len()
+        # Separate into 2 cases:
+        # 1. Using both correct vs both incorrect dataset
+        # 2. Using correct start vs correct end dataset
+        if train_data_class == 'both':
+            correct_count = train_dataset.get_correct_len()
+            incorrect_count = train_dataset.get_incorrect_len()
+        elif train_data_class == 'correct_start_end':
+            correct_count = train_dataset.get_correct_start_len()
+            incorrect_count = train_dataset.get_correct_end_len()
+            
         total_count = correct_count + incorrect_count
         
         y_vals = train_dataset.get_y_data()
