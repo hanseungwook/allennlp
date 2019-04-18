@@ -343,9 +343,10 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     if LAYER_NAMES[0] == 'model_layer_outputs.torch' or LAYER_NAMES[0] == 'model_layer_inputs.torch':
         layer_idx_list = [0] 
     
-    # Creating dataset for last layer start and end outputs 
-    elif LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':        
+    # Creating dataset for last layer start or end outputs 
+    elif LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[1] == 'll_end_outputs.torch':        
         layer_idx_list = [0, 1] # For span_start and span_end last layers
+
     
     if args.max_dim > 0:
         max_dim = args.max_dim
