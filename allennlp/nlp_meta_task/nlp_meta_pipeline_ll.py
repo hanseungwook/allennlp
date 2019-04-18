@@ -80,9 +80,6 @@ class IntermediateLayersInMemoryDataset(Dataset):
             for i in range(len(correct_start_files)):
                 self.X_data.append([])
 
-            for i in range(len(correct_end_files)):
-                self.X_data.append([])
-
             self.data_class = 'correct_start_end'
 
         elif one_class == 'correct_start':
