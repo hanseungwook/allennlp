@@ -22,7 +22,7 @@ import IPython
 ### GLOBAL PARAMETERS
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['ll_start_outputs.torch']
+LAYER_NAMES = ['ll_end_outputs.torch']
 #LAYER_NAMES = ['model_layer_inputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
@@ -370,7 +370,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         layer_idx_list = [0] 
     
     # Creating dataset for last layer start or end outputs 
-    elif LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[1] == 'll_end_outputs.torch':        
+    elif LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch':        
         layer_idx_list = [0]
 
     
