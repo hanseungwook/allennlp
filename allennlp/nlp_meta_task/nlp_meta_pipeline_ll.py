@@ -172,6 +172,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         self.total_len = self.correct_len + self.correct_start_len + \
                          self.correct_end_len + self.incorrect_len
 
+        LOGGER.info('Total len: {}'.format(self.total_len))
         # Create labels
         ### TODO: Only accounts for both correct and incorrect, without consideration of correct start and correct end
         self.Y_data = np.zeros((self.total_len))
@@ -397,7 +398,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         elif train_data_class == 'correct_start_end':
             correct_count = train_dataset.get_correct_start_len()
             incorrect_count = train_dataset.get_correct_end_len()
-            
+
         total_count = correct_count + incorrect_count
         
         y_vals = train_dataset.get_y_data()
