@@ -460,7 +460,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     if args.load_meta_model_from_saved_state:
         LOGGER.info('Evaluating test dataset')
 
-        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
+        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch, args.results_dir)
 
         total_acc = error_acc + correct_acc
         total_geo_acc = np.sqrt(error_acc * correct_acc)
@@ -477,7 +477,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         train_acc = train_meta(meta_model, device, train_loader, meta_optimizer, epoch)
         LOGGER.info('Training: Finished epoch {}'.format(epoch))
         LOGGER.info('Testing: Starting epoch {}'.format(epoch))
-        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
+        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch, args.results_dir)
         LOGGER.info('Testing: Finished epoch {}'.format(epoch))
         total_acc = error_acc + correct_acc
         total_geo_acc = np.sqrt(error_acc * correct_acc)
