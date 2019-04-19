@@ -286,6 +286,10 @@ def process_layer_data(data, layer_no):
     elif len(LAYER_NAMES) == 1 and (LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch'):
         if layer_no == 0 or layer_no == 1:
             processed_data = data.view(data.shape[1])
+    
+    elif len(LAYER_NAMES) == 2 and LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':
+        if layer_no == 0 or layer_no == 1:
+            processed_data = data.view(data.shape[1])
 
     elif len(LAYER_NAMES) == 4:
         # Model layer input: Only take the first element of the model layer input tuple of tensors
