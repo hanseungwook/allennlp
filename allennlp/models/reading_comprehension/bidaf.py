@@ -298,6 +298,12 @@ class BidirectionalAttentionFlow(Model):
                 'f1': f1_score,
                 }
 
+    def test(test):
+        if test == "test":
+            return True
+        else:
+            return False
+
     @staticmethod
     def get_best_span(span_start_logits: torch.Tensor, span_end_logits: torch.Tensor) -> torch.Tensor:
         # We call the inputs "logits" - they could either be unnormalized logits or normalized log
