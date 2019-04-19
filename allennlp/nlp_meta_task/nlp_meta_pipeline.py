@@ -224,16 +224,14 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 del self.X_data[layer_idx][del_idx]
 
     # Concatenate layers
-    def concat_layers(self, cat_idx_list=None):
-        """
-        for layer_idx in pad_idx_list:
+    def concat_layers(self, cat_idx_list=None, max_dim_list=None):
+        for layer_idx in cat_idx_list:
             for i in range(len(self.X_data[layer_idx])):
                 cur_item = self.X_data[layer_idx][i]
-                padded = torch.zeros(max_dim)
+                padded = torch.zeros(max_dim_list[layer_idx])
                 cur_dim = cur_item.shape[0]
                 padded[:cur_dim] = cur_item
                 self.X_data[layer_idx][i] = padded
-        """
 
         # If concatenating layer indices given, then concat
         if cat_idx_list:
@@ -244,7 +242,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
                 self.X_data[cat1][i] = torch.cat((self.X_data[cat1][i], self.X_data[cat2][i]), 0)
 
             del self.X_data[cat2]
-        
+
+        return self.X_data[cat_idx_list[0]][0].shape        
         # Set dim_size since new tensors have been created
         # self.dim_size = self.X_data[0][0].shape[0]
 
@@ -353,15 +352,28 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     elif len(LAYER_NAMES) == 2 and LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':
         layer_idx_list = [0, 1]
 
-        train_dataset.concat_layers(cat_idx_list=layer_idx_list)
-        valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list)
-        valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list)
-
     if args.max_dim > 0:
         max_dim = args.max_dim
     else:
-        max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
-                  valid_incorrect_dataset.calc_max_dim(layer_idx_list))
+        if len(layer_idx_list) == 1:
+            max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
+                          valid_incorrect_dataset.calc_max_dim(layer_idx_list))
+        elif len(layer_idx_list) > 1:
+            max_dim_list = []
+            for layer_idx in layer_idx_list:
+                max_dim = max(train_dataset.calc_max_dim([layer_idx]), valid_correct_dataset.calc_max_dim([layer_idx]),
+                              valid_incorrect_dataset.calc_max_dim([layer_idx]))
+                max_dim_list.append(max_dim)
+            
+            
+            after_concat1 = train_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=max_dim_list)
+            after_concat2 = valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=max_dim_list)
+            after_concat3 = valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=max_dim_list)
+            
+            max_dim = sum(max_dim_list)
+            IPython.embed()
+            
+                
     
     LOGGER.info('Set max_dim to {}'.format(max_dim))
 
