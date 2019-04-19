@@ -33,7 +33,7 @@ pip install allennlp --user
 ```
 
 ## Installing NVIDIA apex library for faster computation on AllenNLP
-https://github.com/apex/apex  
+https://github.com/NVIDIA/apex
 
 ## Obtaining serialized models and squad datasets
 Retrieve nlp output datasets from our Google Drive shared folder:
@@ -48,17 +48,17 @@ This assumes that you have cloned my **forked** AllenNLP git repository.
   
 ```bash
 cd allennlp/allennlp/nlp_meta_task/
-python3 test_model_batch.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
+python3 extract_inter_base_model.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
 ```
 
 If you need to separate the intermediate outputs into batches b/c of memory error, the following code:
 ```bash
-python3 test_model_batch.py --weights_file={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --output_dir={relative path to output folder to create} --cuda={cuda device num or cpu}
+python3 extract_inter_base_model_batch.py --weights_file={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --output_dir={relative path to output folder to create} --cuda={cuda device num or cpu}
 ```
 
 Example command
 ```bash
-python3 test_model.py --weights_file=../../../serialized_models/test4/best.th --serialization_dir=../../../serialized_models/test4/ --val_filepath../../../squad_datasets/dataset_val_q.json --output_dir=../../../outputs/train_outputs/ --cuda=0
+python3 extract_inter_base_model.py --weights_file=../../../serialized_models/test4/best.th --serialization_dir=../../../serialized_models/test4/ --val_filepath../../../squad_datasets/dataset_val_q.json --output_dir=../../../outputs/train_outputs/ --cuda=0
 ```  
 
 **Note**: Depending on the existence of GPU, need to change the 'cuda' parameter in test_model.py  
