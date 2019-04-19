@@ -366,6 +366,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         elif len(layer_idx_list) > 1:
             valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=[args.max_dim, args.max_dim])
             valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=[args.max_dim, args.max_dim])  
+            layer_idx_list = [0]
             max_dim = args.max_dim * 2
         
     else:
@@ -384,12 +385,10 @@ def make_and_train_meta_model(args, device, train_set_percentage):
             after_concat2 = valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=max_dim_list)
             after_concat3 = valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=max_dim_list)
             
+            layer_idx_list = [0]
             max_dim = sum(max_dim_list)
             
-                
-    
     LOGGER.info('Set max_dim to {}'.format(max_dim))
-
 
     valid_correct_dataset.set_max_dim(max_dim)
     valid_incorrect_dataset.set_max_dim(max_dim)
