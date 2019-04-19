@@ -301,7 +301,7 @@ def process_layer_data(data, layer_no, attention=None):
     elif len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'outputs.torch' and attention == 'question_passage_attention':
         if layer_no == 0:
             data = data['question_passage_attention']
-            processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])   
+            processed_data = data.reshape(data.shape[0] * data.shape[1])   
     
 
     elif len(LAYER_NAMES) == 4:
