@@ -364,7 +364,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     elif len(LAYER_NAMES) == 2 and LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':
         layer_idx_list = [0, 1]
     
-    elif LAYER_NAMES[0] == 'passage_question_attention':
+    elif LAYER_NAMES[0] == 'outputs.torch':
         layer_idx_list = [0]
 
     if args.max_dim > 0:
