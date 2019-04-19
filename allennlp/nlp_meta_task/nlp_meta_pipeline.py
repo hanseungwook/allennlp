@@ -273,6 +273,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
 
 # Processes the data (tensor) of the layer to reshape and etc given the layer number
 def process_layer_data(data, layer_no, attention=None):
+    process_data = None
     # Model layer input
     if len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_inputs.torch':
         if layer_no == 0:
