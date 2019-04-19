@@ -183,6 +183,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         Xs_to_return = []
 
         for layer in range(len(self.X_data)):
+            IPython.embed()
             Xs_to_return.append(self.X_data[layer][idx].float())
 
         cur_item = Xs_to_return[0]
