@@ -284,8 +284,8 @@ def process_layer_data(data, layer_no):
         if layer_no == 0:
             processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])
 
-    # Last layer start and end layers
-    elif len(LAYER_NAMES) == 2:
+    # Last layer start or end layers
+    elif len(LAYER_NAMES) == 1 and (LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch'):
         if layer_no == 0 or layer_no == 1:
             processed_data = data.view(data.shape[1])
 
