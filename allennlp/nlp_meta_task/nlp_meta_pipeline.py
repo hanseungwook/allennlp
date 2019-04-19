@@ -361,19 +361,19 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         layer_idx_list = [0]
 
     if args.max_dim > 0:
-        if len(layer_idx_list) == 1:
+        if len(LAYER_NAMES) == 1:
             max_dim = args.max_dim
-        elif len(layer_idx_list) > 1:
+        elif len(LAYER_NAMES) > 1:
             valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=[args.max_dim, args.max_dim])
             valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=[args.max_dim, args.max_dim])  
             layer_idx_list = [0]
             max_dim = args.max_dim * 2
         
     else:
-        if len(layer_idx_list) == 1:
+        if len(LAYER_NAMES) == 1:
             max_dim = max(train_dataset.calc_max_dim(layer_idx_list), valid_correct_dataset.calc_max_dim(layer_idx_list),
                           valid_incorrect_dataset.calc_max_dim(layer_idx_list))
-        elif len(layer_idx_list) > 1:
+        elif len(LAYER_NAMES) > 1:
             max_dim_list = []
             for layer_idx in layer_idx_list:
                 max_dim = max(train_dataset.calc_max_dim([layer_idx]), valid_correct_dataset.calc_max_dim([layer_idx]),
