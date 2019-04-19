@@ -48,7 +48,7 @@ This assumes that you have cloned my **forked** AllenNLP git repository.
   
 ```bash
 cd allennlp/allennlp/nlp_meta_task/
-python3 extract_inter_base_model.py --weights_dir={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
+python3 extract_inter_base_model.py --weights_file={relative path to the weights to load} --serialization_dir={relative path to serialized_dir} --val_filepath={relative path to squad dataset to evaluate} --cuda={cuda device num or cpu}
 ```
 
 If you need to separate the intermediate outputs into batches b/c of memory error, the following code:
