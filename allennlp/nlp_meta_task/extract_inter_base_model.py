@@ -12,7 +12,7 @@ from allennlp.data import DatasetReader
 from allennlp.data.dataset import Batch
 from allennlp.training.metrics import CategoricalAccuracy
 from progressbar import ProgressBar
-from test_model_batch import CONFIG_NAME, DEFAULT_PREDICTORS, compute_metrics, load_model, load_dataset_reader, move_input_to_device
+from extract_inter_base_model_batch import CONFIG_NAME, DEFAULT_PREDICTORS, compute_metrics, load_model, load_dataset_reader, move_input_to_device
 import IPython
 
 logger = logging.getLogger(__name__)
