@@ -188,6 +188,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         padded = torch.zeros(self.max_dim)
         LOGGER.info('max_dim in getitem: {}'.format(self.max_dim))
         cur_dim = cur_item.shape[0]
+        IPython.embed()
         padded[:cur_dim] = cur_item
         Xs_to_return = (padded)
 
@@ -460,7 +461,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     if args.load_meta_model_from_saved_state:
         LOGGER.info('Evaluating test dataset')
         epoch = 0
-        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
+        correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch, args.results_dir)
 
         total_acc = error_acc + correct_acc
         total_geo_acc = np.sqrt(error_acc * correct_acc)
