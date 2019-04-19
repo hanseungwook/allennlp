@@ -448,7 +448,10 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     if not args.load_meta_model_from_saved_state:
         size_of_first_layer = train_dataset.get_size()
     else:
-        size_of_first_layer = args.max_dim
+        if len(LAYER_NAMES) == 1:
+            size_of_first_layer = args.max_dim
+        else:
+            size_of_first_layer = args.max_dim * 2
     
     LOGGER.info('meta model size of first layer: {}'.format(size_of_first_layer))
     if args.model_class == 0:
