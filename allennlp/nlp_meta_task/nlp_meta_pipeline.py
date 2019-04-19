@@ -22,7 +22,7 @@ import IPython
 ### GLOBAL PARAMETERS
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['model_layer_inputs.torch']
+LAYER_NAMES = ['ll_end_outputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -343,8 +343,9 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         layer_idx_list = [0] 
     
     # Creating dataset for last layer start and end outputs 
-    elif LAYER_NAMES[0] == 'span_start_outputs.torch' and LAYER_NAMES[1] == 'span_end_outputs.torch':        
-        layer_idx_list = [0, 1] # For span_start and span_end last layers
+    elif LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch':
+        print('here')
+        layer_idx_list = [0] # For span_start and span_end last layers
     
     if args.max_dim > 0:
         max_dim = args.max_dim
@@ -360,7 +361,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
 
     if args.load_meta_model_from_saved_state:
         LOGGER.info('Filtering features that are greater than (only for when loading meta model)')
-        train_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
+        #train_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
         valid_correct_dataset.filter_over_dim(layer_idx_list=layer_idx_list)
         valid_incorrect_dataset.filter_over_dim(layer_idx_list=layer_idx_list) 
 
@@ -417,13 +418,13 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     
     LOGGER.info('meta model size of first layer: {}'.format(size_of_first_layer))
     if args.model_class == 0:
-        meta_model = FCMetaNet(size_of_first_layer).cuda()
+        meta_model = FCMetaNet(size_of_first_layer).to(device)
     elif args.model_class == 1:
-        meta_model = FCMetaNet1(size_of_first_layer).cuda()
+        meta_model = FCMetaNet1(size_of_first_layer).to(device)
     elif args.model_class == 2:
-        meta_model = FCMetaNet2(size_of_first_layer).cuda() 
+        meta_model = FCMetaNet2(size_of_first_layer).to(device) 
     elif args.model_class == 3:
-        meta_model = FCMetaNet3(size_of_first_layer).cuda()
+        meta_model = FCMetaNet3(size_of_first_layer).to(device)
 
     # If saved state given, load into model
     if args.load_meta_model_from_saved_state:
@@ -458,14 +459,14 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     # Test for loading meta model from saved state
     if args.load_meta_model_from_saved_state:
         LOGGER.info('Evaluating test dataset')
-
+        epoch = 0
         correct_acc, error_acc = test_meta_model(meta_model, device, incorrect_valid_loader, correct_valid_loader, meta_optimizer, epoch)
 
         total_acc = error_acc + correct_acc
         total_geo_acc = np.sqrt(error_acc * correct_acc)
         total_diff_adj_geo_acc = total_geo_acc - np.abs(error_acc-correct_acc)
 
-        accuracies_file.write(str(epoch) + " " + str(train_acc) + " " + " " + str(correct_acc) + " " + str(error_acc)+ " " + str(total_acc) + " " +  str(total_geo_acc) + " " + str(total_diff_adj_geo_acc)+"\n")
+        accuracies_file.write(str(correct_acc) + " " + str(error_acc)+ " " + str(total_acc) + " " +  str(total_geo_acc) + " " + str(total_diff_adj_geo_acc)+"\n")
         accuracies_file.close()
 
         return correct_acc, error_acc
