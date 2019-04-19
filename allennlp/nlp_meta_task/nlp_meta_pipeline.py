@@ -289,6 +289,11 @@ def process_layer_data(data, layer_no):
     elif len(LAYER_NAMES) == 2 and LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':
         if layer_no == 0 or layer_no == 1:
             processed_data = data.view(data.shape[1])
+        
+    # Passage question attention or Question passage attention
+    elif len(LAYER_NAMES) == 1 and (LAYER_NAMES[0] == 'passage_question_attention' or LAYER_NAMES[0] == 'question_passage_attention'):
+        if layer_no == 0:
+            processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])   
 
     elif len(LAYER_NAMES) == 4:
         # Model layer input: Only take the first element of the model layer input tuple of tensors
@@ -351,6 +356,9 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     # Creating dataset with concat of last layer start and end
     elif len(LAYER_NAMES) == 2 and LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':
         layer_idx_list = [0, 1]
+    
+    elif LAYER_NAMES[0] == 'passage_question_attention':
+        layer_idx_list = [0]
 
     if args.max_dim > 0:
         max_dim = args.max_dim
@@ -371,7 +379,6 @@ def make_and_train_meta_model(args, device, train_set_percentage):
             after_concat3 = valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list, max_dim_list=max_dim_list)
             
             max_dim = sum(max_dim_list)
-            IPython.embed()
             
                 
     
