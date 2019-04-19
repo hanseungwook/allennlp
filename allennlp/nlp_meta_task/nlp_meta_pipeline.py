@@ -21,8 +21,9 @@ import IPython
 
 ### GLOBAL PARAMETERS
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
+#LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
 #LAYER_NAMES = ['ll_end_outputs.torch']
+LAYER_NAMES = ['outputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -41,7 +42,7 @@ LOGGER.setLevel(logging.INFO)
 class IntermediateLayersInMemoryDataset(Dataset):
     def __init__(self, correct_files=None, correct_start_files=None, correct_end_files=None, 
                  incorrect_files=None, input_files=None, cor_percentage = 1.0, incor_percentage = 1.0,
-                 one_class = False, max_dim=0, transform=None):
+                 one_class = False, attention=None, max_dim=0, transform=None):
         self.correct_running_count = 0
         self.correct_start_running_count = 0
         self.correct_end_running_count = 0
@@ -104,7 +105,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             for layer_index in range(len(correct_files)):
                 loaded = torch.load(correct_files[layer_index])
                 for item_idx in selected_indices_correct:
-                    processed_data = process_layer_data(loaded[item_idx], layer_index)
+                    processed_data = process_layer_data(loaded[item_idx], layer_index, attention)
                     self.X_data[layer_index].append(processed_data)
             
             del loaded
@@ -120,7 +121,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             for layer_index in range(len(correct_start_files)):
                 loaded = torch.load(correct_start_files[layer_index])
                 for item_idx in selected_indices_correct_start:
-                    processed_data = process_layer_data(loaded[item_idx], layer_index)
+                    processed_data = process_layer_data(loaded[item_idx], layer_index, attention)
                     self.X_data[layer_index].append(processed_data)
             
             del loaded
@@ -136,7 +137,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             for layer_index in range(len(correct_end_files)):
                 loaded = torch.load(correct_end_files[layer_index])
                 for item_idx in selected_indices_correct_end:
-                    processed_data = process_layer_data(loaded[item_idx], layer_index)
+                    processed_data = process_layer_data(loaded[item_idx], layer_index, attention)
                     self.X_data[layer_index].append(processed_data)
 
             del loaded
@@ -152,7 +153,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
             for layer_index in range(len(incorrect_files)):
                 loaded = torch.load(incorrect_files[layer_index])
                 for item_idx in selected_indices_incorrect:
-                    processed_data = process_layer_data(loaded[item_idx], layer_index)
+                    processed_data = process_layer_data(loaded[item_idx], layer_index, attention)
                     self.X_data[layer_index].append(processed_data)
             
             del loaded
@@ -269,8 +270,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         return self.max_dim
 
 # Processes the data (tensor) of the layer to reshape and etc given the layer number
-def process_layer_data(data, layer_no):
-    processed_data = data
+def process_layer_data(data, layer_no, attention=None):
     # Model layer input
     if len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'model_layer_inputs.torch':
         if layer_no == 0:
@@ -291,9 +291,16 @@ def process_layer_data(data, layer_no):
             processed_data = data.view(data.shape[1])
         
     # Passage question attention or Question passage attention
-    elif len(LAYER_NAMES) == 1 and (LAYER_NAMES[0] == 'passage_question_attention' or LAYER_NAMES[0] == 'question_passage_attention'):
+    elif len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'outputs.torch' and attention == 'passage_question_attention':
         if layer_no == 0:
+            data = data['passage_question_attention']
             processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])   
+    
+    elif len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'outputs.torch' and attention == 'question_passage_attention':
+        if layer_no == 0:
+            data = data['question_passage_attention']
+            processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])   
+    
 
     elif len(LAYER_NAMES) == 4:
         # Model layer input: Only take the first element of the model layer input tuple of tensors
@@ -337,11 +344,11 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     if not args.load_meta_model_from_saved_state:
         train_dataset = IntermediateLayersInMemoryDataset(correct_files=train_correct_files, incorrect_files=train_incorrect_files,
                                                       input_files=train_input_files, cor_percentage=args.cor_percentage, 
-                                                      incor_percentage=args.incor_percentage, one_class='both')
+                                                      incor_percentage=args.incor_percentage, one_class='both', attention=args.attention)
     valid_correct_dataset = IntermediateLayersInMemoryDataset(correct_files=valid_correct_files, input_files=valid_input_files,
-                                                              one_class='correct')
+                                                              one_class='correct', attention=args.attention)
     valid_incorrect_dataset = IntermediateLayersInMemoryDataset(incorrect_files=valid_incorrect_files, 
-                                                                input_files=valid_input_files, one_class='incorrect')
+                                                                input_files=valid_input_files, one_class='incorrect', attention=args.attention)
 
     LOGGER.info('Finished creating training and validation datasets')
 
@@ -595,6 +602,8 @@ def main():
                         help='Manually setting the maximum dimension of features / first layer size of meta model')
     parser.add_argument('--model_class', type=int, default=1,
                         help='FCMetaNet class number')
+    parser.add_argument('--attention', default=None,
+                        help='Attention class: passage_question_attention or question_passage_attention')
     args = parser.parse_args()
     device = torch.device(args.cuda)
 

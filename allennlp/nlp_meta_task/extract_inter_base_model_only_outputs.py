@@ -73,6 +73,7 @@ if __name__ == "__main__":
             model_input['span_end'] = model_input['span_end'].to(device)
 
             model_outputs = model(**model_input)
+            IPython.embed()
             metrics = compute_metrics(model_outputs, **model_input)
 
             span_start_acc = metrics['span_start_acc']
