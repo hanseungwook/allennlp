@@ -350,7 +350,7 @@ def make_and_train_meta_model(args, device, train_set_percentage):
         layer_idx_list = [0] 
     
     # Creating dataset for last layer start or end outputs 
-    elif LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch':
+    elif len(LAYER_NAMES) == 1 and (LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch'):
         layer_idx_list = [0]
 
     # Creating dataset with concat of last layer start and end
