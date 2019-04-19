@@ -21,8 +21,8 @@ import IPython
 
 ### GLOBAL PARAMETERS
 # LAYER_NAMES = ['model_layer_inputs.torch', 'model_layer_outputs.torch', 'll_start_outputs.torch', 'll_end_outputs.torch']
-#LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['ll_end_outputs.torch']
+LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
+#LAYER_NAMES = ['ll_end_outputs.torch']
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 CORRECT_START = 'correct_start_'
@@ -341,11 +341,18 @@ def make_and_train_meta_model(args, device, train_set_percentage):
     if LAYER_NAMES[0] == 'model_layer_outputs.torch' or LAYER_NAMES[0] == 'model_layer_inputs.torch':
         layer_idx_list = [0] 
     
-    # Creating dataset for last layer start and end outputs 
+    # Creating dataset for last layer start or end outputs 
     elif LAYER_NAMES[0] == 'll_start_outputs.torch' or LAYER_NAMES[0] == 'll_end_outputs.torch':
-        print('here')
-        layer_idx_list = [0] # For span_start and span_end last layers
-    
+        layer_idx_list = [0]
+
+    # Creating dataset with concat of last layer start and end
+    elif len(LAYER_NAMES) == 2 and LAYER_NAMES[0] == 'll_start_outputs.torch' and LAYER_NAMES[1] == 'll_end_outputs.torch':
+        layer_idx_list = [0, 1]
+
+        train_dataset.concat_layers(cat_idx_list=layer_idx_list)
+        valid_correct_dataset.concat_layers(cat_idx_list=layer_idx_list)
+        valid_incorrect_dataset.concat_layers(cat_idx_list=layer_idx_list)
+
     if args.max_dim > 0:
         max_dim = args.max_dim
     else:
