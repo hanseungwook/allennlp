@@ -303,6 +303,11 @@ def process_layer_data(data, layer_no, attention=None):
             data = data['question_passage_attention']
             processed_data = data.reshape(data.shape[0] * data.shape[1])   
     
+    elif len(LAYER_NAMES) == 1 and LAYER_NAMES[0] == 'outputs.torch' and attention == 'passage_question_similarity':
+        if layer_no == 0:
+            data = data['passage_question_similarity']
+            processed_data = data.reshape(data.shape[0] * data.shape[1] * data.shape[2])      
+    
 
     elif len(LAYER_NAMES) == 4:
         # Model layer input: Only take the first element of the model layer input tuple of tensors
@@ -605,7 +610,7 @@ def main():
     parser.add_argument('--model_class', type=int, default=1,
                         help='FCMetaNet class number')
     parser.add_argument('--attention', default=None,
-                        help='Attention class: passage_question_attention or question_passage_attention')
+                        help='Attention class: passage_question_attention / question_passage_attention / passage_question_similarity')
     args = parser.parse_args()
     device = torch.device(args.cuda)
 
