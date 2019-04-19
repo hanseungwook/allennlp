@@ -183,7 +183,6 @@ class IntermediateLayersInMemoryDataset(Dataset):
         Xs_to_return = []
 
         for layer in range(len(self.X_data)):
-            IPython.embed()
             Xs_to_return.append(self.X_data[layer][idx].float())
 
         cur_item = Xs_to_return[0]
@@ -224,6 +223,8 @@ class IntermediateLayersInMemoryDataset(Dataset):
             
             for del_idx in sorted(over_max_dim_idx, reverse=True):
                 del self.X_data[layer_idx][del_idx]
+            
+            self.total_len -= len(over_max_dim_idx)
 
     # Concatenate layers
     def concat_layers(self, cat_idx_list=None, max_dim_list=None):
