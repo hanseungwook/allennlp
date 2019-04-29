@@ -8,7 +8,7 @@ from itertools import compress
 CORRECT_META_FILE = 'meta_correct_outputs.torch'
 INCORRECT_META_FILE = 'meta_incorrect_outputs.torch'
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = 'outputs.torch'
+LAYER_NAME = 'outputs.torch'
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 
