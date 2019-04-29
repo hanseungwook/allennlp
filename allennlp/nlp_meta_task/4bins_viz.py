@@ -66,11 +66,14 @@ def preprocess_outputs(outputs):
 
 
 def create_viz(y, data_name):
+    global FIG_IDX
+    
     for i in range(len(y)):
         plt.figure(FIG_IDX)
         plt.scatter(list(range(len(y[i]))), y[i])
         plt.ylabel(data_name)
         plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
+
         FIG_IDX += 1
 
 
