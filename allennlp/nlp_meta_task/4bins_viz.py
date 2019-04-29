@@ -74,7 +74,8 @@ def create_viz(y, data_name):
 
     for i in range(len(y)):
         plt.subplot(1, 4, i+1)
-        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=20)
+        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=5)
+        plt.xlabel(BIN_NAMES[i])
         
     plt.ylabel(data_name)
     plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
