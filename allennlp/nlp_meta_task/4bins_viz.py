@@ -71,7 +71,6 @@ def create_viz(y, data_name):
         plt.scatter(list(range(len(y[i]))), y[i])
         plt.ylabel(data_name)
         plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
-
         FIG_IDX += 1
 
 
