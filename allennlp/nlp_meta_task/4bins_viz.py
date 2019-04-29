@@ -72,6 +72,11 @@ def create_viz(results_dir, y, data_name):
     global FIG_IDX
     plt.figure(FIG_IDX)
 
+    try:
+        os.mkdir(results_dir)
+    except:
+        raise Exception('Could not create results directory')
+
     for i in range(len(y)):
         plt.subplot(1, 4, i+1)
         plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=1)
