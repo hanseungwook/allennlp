@@ -8,7 +8,7 @@ from itertools import compress
 CORRECT_META_FILE = 'meta_correct_outputs.torch'
 INCORRECT_META_FILE = 'meta_incorrect_outputs.torch'
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
-LAYER_NAMES = ['outputs.torch']
+LAYER_NAMES = 'outputs.torch'
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 
@@ -29,16 +29,16 @@ def create_meta_labels(output_filepath):
     return meta_labels
 
 
-def construct_4_bins(test_outputs_dir, layer_name, correct_meta_labels, incorrect_meta_labels):
-    correct_outputs = torch.load(os.path.join(test_outputs_dir, CORRECT + layer_name))
-    incorrect_outputs = torch.load(os.path.join(test_outputs_dir, INCORRECT + layer_name))
+def construct_4_bins(test_outputs_dir, side, correct_meta_labels, incorrect_meta_labels,):
+    correct_outputs = torch.load(os.path.join(test_outputs_dir, CORRECT + LAYER_NAME))
+    incorrect_outputs = torch.load(os.path.join(test_outputs_dir, INCORRECT + LAYER_NAME))
 
     correct_outputs = preprocess_outputs(correct_outputs)
     incorrect_outputs = preprocess_outputs(incorrect_outputs)
 
-    if layer_name == 'start':
+    if side == 'start':
         LAYER = 'span_start_probs'
-    elif layer_name == 'end':
+    elif side == 'end':
         LAYER = 'span_end_probs'
 
     cor_cor = [x[LAYER] for x in list(compress(correct_outputs, correct_meta_labels))]
