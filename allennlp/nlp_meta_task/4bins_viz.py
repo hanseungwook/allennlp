@@ -4,6 +4,7 @@ import IPython
 import argparse
 from scipy.stats import entropy
 from itertools import compress
+from itertools import cycle
 import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib import pyplot as plt
@@ -18,6 +19,8 @@ CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
 BIN_NAMES = ['b_correct_m_correct', 'b_correct_m_incorrect', 'b_incorrect_m_correct', 'b_incorrect_m_incorrect']
 FIG_IDX = 0
+COLORS = cycle(['b', 'r', 'g', 'y'])
+
 
 def create_meta_labels(output_filepath):
     outputs = outputs = torch.load(output_filepath, map_location='cpu')
@@ -67,14 +70,15 @@ def preprocess_outputs(outputs):
 
 def create_viz(y, data_name):
     global FIG_IDX
-    
-    for i in range(len(y)):
-        plt.figure(FIG_IDX)
-        plt.scatter(list(range(len(y[i]))), y[i])
-        plt.ylabel(data_name)
-        plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
+    plt.figure(FIG_IDX)
 
-        FIG_IDX += 1
+    for i in range(len(y)):
+        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS))
+        
+    plt.ylabel(data_name)
+    plt.legend()
+    plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
+    FIG_IDX += 1
 
 
 if __name__ == "__main__":
