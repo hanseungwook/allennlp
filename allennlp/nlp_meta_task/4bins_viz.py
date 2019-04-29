@@ -5,10 +5,9 @@ import argparse
 from scipy.stats import entropy
 from itertools import compress
 import matplotlib as mpl
+mpl.use('Agg')
 from matplotlib import pyplot as plt
 
-# Configuring mpl for no display
-mpl.use('Agg')
 
 # Global Parameters
 CORRECT_META_FILE = 'meta_correct_outputs.torch'
