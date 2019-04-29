@@ -4,13 +4,20 @@ import IPython
 import argparse
 from scipy.stats import entropy
 from itertools import compress
+import matplotlib as mpl
+from matplotlib import pyplot as plt
 
+# Configuring mpl for no display
+mpl.use('Agg')
+
+# Global Parameters
 CORRECT_META_FILE = 'meta_correct_outputs.torch'
 INCORRECT_META_FILE = 'meta_incorrect_outputs.torch'
 #LAYER_NAMES = ['ll_start_outputs.torch', 'll_end_outputs.torch']
 LAYER_NAME = 'outputs.torch'
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
+BIN_NAMES = ['b_correct_m_correct', 'b_correct_m_incorrect', 'b_incorrect_m_correct', 'b_incorrect_m_incorrect']
 
 def create_meta_labels(output_filepath):
     outputs = outputs = torch.load(output_filepath, map_location='cpu')
@@ -47,6 +54,7 @@ def construct_4_bins(test_outputs_dir, side, correct_meta_labels, incorrect_meta
 
     return bins
 
+
 def preprocess_outputs(outputs):
     processed_outputs = []
 
@@ -55,6 +63,15 @@ def preprocess_outputs(outputs):
         processed_outputs.append(processed_data)
     
     return processed_outputs
+
+
+def create_viz(y, data_name):
+    for i in range(len(y)):
+        plt.figure(i)
+        plt.scatter(list(range(len(y[i]))), y[i])
+        plt.ylabel(data_name)
+        plt.savefig(data_name + BIN_NAMES[i] + '.png')
+
 
 if __name__ == "__main__":
     # Parse arguments
@@ -81,4 +98,7 @@ if __name__ == "__main__":
             maxes[x].append(i.max().numpy())
             entropies[x].append(entropy(i.numpy()))
 
-    IPython.embed()
+    create_viz(means, 'means')
+    create_viz(stds, 'standard deviations')
+    create_viz(maxes, 'maximum probabilities')
+    create_viz(entropies, 'entropies')
