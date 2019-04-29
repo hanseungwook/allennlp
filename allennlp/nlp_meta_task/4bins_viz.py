@@ -68,17 +68,17 @@ def preprocess_outputs(outputs):
     return processed_outputs
 
 
-def create_viz(y, data_name):
+def create_viz(results_dir, y, data_name):
     global FIG_IDX
     plt.figure(FIG_IDX)
 
     for i in range(len(y)):
         plt.subplot(1, 4, i+1)
-        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=5)
+        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=1)
         plt.xlabel(BIN_NAMES[i])
         
     plt.ylabel(data_name)
-    plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
+    plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
     FIG_IDX += 1
 
 
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--meta_outputs_dir", help="Relative path to model weights file")
     parser.add_argument("--test_outputs_dir", help="Relative path to directory with intermediate/final outputs")
+    parser.add_argument("--results_dir", help="Relative path to directory for saving plots")
     args = parser.parse_args()
 
     correct_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, CORRECT_META_FILE))
@@ -107,7 +108,7 @@ if __name__ == "__main__":
             maxes[x].append(i.max().numpy())
             entropies[x].append(entropy(i.numpy()))
 
-    create_viz(means, 'means')
-    create_viz(stds, 'standard deviations')
-    create_viz(maxes, 'maximum probabilities')
-    create_viz(entropies, 'entropies')
+    create_viz(args.results_dir, means, 'means')
+    create_viz(args.results_dir, stds, 'standard deviations')
+    create_viz(args.results_dir, maxes, 'maximum probabilities')
+    create_viz(args.results_dir, entropies, 'entropies')
