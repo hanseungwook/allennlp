@@ -30,8 +30,8 @@ def create_meta_labels(output_filepath):
 
 
 def construct_4_bins(test_outputs_dir, side, correct_meta_labels, incorrect_meta_labels,):
-    correct_outputs = torch.load(os.path.join(test_outputs_dir, CORRECT + LAYER_NAME))
-    incorrect_outputs = torch.load(os.path.join(test_outputs_dir, INCORRECT + LAYER_NAME))
+    correct_outputs = torch.load(os.path.join(test_outputs_dir, CORRECT + LAYER_NAME), map_location='cpu')
+    incorrect_outputs = torch.load(os.path.join(test_outputs_dir, INCORRECT + LAYER_NAME), map_location='cpu')
 
     if side == 'start':
         LAYER = 'span_start_probs'
