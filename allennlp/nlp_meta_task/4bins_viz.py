@@ -72,11 +72,6 @@ def create_viz(results_dir, y, data_name):
     global FIG_IDX
     plt.figure(FIG_IDX)
 
-    try:
-        os.mkdir(results_dir)
-    except:
-        raise Exception('Could not create results directory')
-
     for i in range(len(y)):
         plt.subplot(1, 4, i+1)
         plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=1)
@@ -112,6 +107,11 @@ if __name__ == "__main__":
             stds[x].append(i.std().numpy())
             maxes[x].append(i.max().numpy())
             entropies[x].append(entropy(i.numpy()))
+
+    try:
+        os.mkdir(args.results_dir)
+    except:
+        raise Exception('Could not create results directory')
 
     create_viz(args.results_dir, means, 'means')
     create_viz(args.results_dir, stds, 'standard deviations')
