@@ -73,10 +73,10 @@ def create_viz(y, data_name):
     plt.figure(FIG_IDX)
 
     for i in range(len(y)):
-        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS))
+        plt.subplot(1, 4, i+1)
+        plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=20)
         
     plt.ylabel(data_name)
-    plt.legend()
     plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
     FIG_IDX += 1
 
