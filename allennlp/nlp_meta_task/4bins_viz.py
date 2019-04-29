@@ -69,7 +69,7 @@ def create_viz(y, data_name):
         plt.figure(i)
         plt.scatter(list(range(len(y[i]))), y[i])
         plt.ylabel(data_name)
-        plt.savefig(data_name + BIN_NAMES[i] + '.png')
+        plt.savefig(data_name + '_' + BIN_NAMES[i] + '.png')
 
 
 if __name__ == "__main__":
