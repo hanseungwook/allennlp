@@ -33,18 +33,15 @@ def construct_4_bins(test_outputs_dir, side, correct_meta_labels, incorrect_meta
     correct_outputs = torch.load(os.path.join(test_outputs_dir, CORRECT + LAYER_NAME))
     incorrect_outputs = torch.load(os.path.join(test_outputs_dir, INCORRECT + LAYER_NAME))
 
-    correct_outputs = preprocess_outputs(correct_outputs)
-    incorrect_outputs = preprocess_outputs(incorrect_outputs)
-
     if side == 'start':
         LAYER = 'span_start_probs'
     elif side == 'end':
         LAYER = 'span_end_probs'
 
-    cor_cor = [x[LAYER] for x in list(compress(correct_outputs, correct_meta_labels))]
-    cor_incor = [x[LAYER] for x in list(compress(correct_outputs, [not i for i in correct_meta_labels]))]
-    incor_cor = [x[LAYER] for x in list(compress(incorrect_outputs, [not i for i in incorrect_meta_labels]))]
-    incor_incor = [x[LAYER] for x in list(compress(incorrect_outputs, incorrect_meta_labels))]
+    cor_cor = preprocess_outputs([x[LAYER] for x in list(compress(correct_outputs, correct_meta_labels))])
+    cor_incor = preprocess_outputs([x[LAYER] for x in list(compress(correct_outputs, [not i for i in correct_meta_labels]))])
+    incor_cor = preprocess_outputs([x[LAYER] for x in list(compress(incorrect_outputs, [not i for i in incorrect_meta_labels]))])
+    incor_incor = preprocess_outputs([x[LAYER] for x in list(compress(incorrect_outputs, incorrect_meta_labels))])
 
     bins = [cor_cor, cor_incor, incor_cor, incor_incor]
 
