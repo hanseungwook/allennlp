@@ -116,7 +116,7 @@ def run_bins(args):
     create_bins_viz(args.results_dir, entropies, 'entropies')
 
 
-def run_psg_q_len_acc(args, len_class = 'passage'):
+def run_psg_q_len_acc(args):
     try:
         os.mkdir(args.results_dir)
     except:
@@ -131,21 +131,21 @@ def run_psg_q_len_acc(args, len_class = 'passage'):
     correct_len = []
     incorrect_len = []
 
-    if len_class == 'passage':
+    if args.len_class == 'passage':
         for output in correct_outputs:
             correct_len.append(len(output['passage_tokens'][0]))
         
         for output in incorrect_outputs:
             incorrect_len.append(len(output['passage_tokens'][0]))
     
-    elif len_class == 'question':
+    elif args.len_class == 'question':
         for output in correct_outputs:
             correct_len.append(len(output['question_tokens'][0]))
         
         for output in incorrect_outputs:
             incorrect_len.append(len(output['question_tokens'][0]))
     
-    elif len_class == 'both':
+    elif args.len_class == 'both':
         for output in correct_outputs:
             total_len = len(output['passage_tokens'][0]) + len(output['question_tokens'][0])
             correct_len.append(total_len)
@@ -165,6 +165,8 @@ def run_psg_q_len_acc(args, len_class = 'passage'):
     
     plt.scatter(correct_len_acc_df['Length'], correct_len_acc_df['Prediction'], c=correct_colors, s=1)
     plt.scatter(incorrect_len_acc_df['Length'], incorrect_len_acc_df['Prediction'], c=incorrect_colors, s=1)
+    plt.xlabel(args.len_class + ' Length')
+    plt.ylabel('Prediction')
 
     plt.savefig(os.path.join(args.results_dir, len_class + '_viz.png'))
 
@@ -175,8 +177,9 @@ if __name__ == "__main__":
     parser.add_argument("--meta_outputs_dir", help="Relative path to meta outputs directory")
     parser.add_argument("--test_outputs_dir", help="Relative path to directory with intermediate/final outputs")
     parser.add_argument("--results_dir", help="Relative path to directory for saving plots")
+    parser.add_argument("--len_class", default="passage", help="Length class (passage, question, both)")
     args = parser.parse_args()
     
     #run_bins(args)
-    run_psg_q_len_acc(args, len_class='passage')
+    run_psg_q_len_acc(args)
 
