@@ -4,8 +4,8 @@ from bins_viz import create_meta_labels
 
 def jaccard(input1_filepath, input2_filepath):
     # Load and create meta labels from its outputs
-    input1 = create_meta_labels(args.input1)
-    input2 = create_meta_labels(args.input2)
+    input1 = create_meta_labels(input1_filepath)
+    input2 = create_meta_labels(input2_filepath)
 
     # Compute Jaccard similarity measure
     intersect = 0 
