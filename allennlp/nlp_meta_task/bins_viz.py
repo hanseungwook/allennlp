@@ -93,27 +93,49 @@ def run_bins(args):
     start_bins = construct_4_bins(args.test_outputs_dir, 'start', correct_meta_labels, incorrect_meta_labels)
     end_bins = construct_4_bins(args.test_outputs_dir, 'end', correct_meta_labels, incorrect_meta_labels)
 
-    means = [[] for i in range(4)]
-    stds = [[] for i in range(4)]
-    entropies = [[] for i in range(4)]
-    maxes = [[] for i in range(4)]
+    start_means = [[] for i in range(4)]
+    start_stds = [[] for i in range(4)]
+    start_entropies = [[] for i in range(4)]
+    start_maxes = [[] for i in range(4)]
+
+    end_means = [[] for i in range(4)]
+    end_stds = [[] for i in range(4)]
+    end_entropies = [[] for i in range(4)]
+    end_maxes = [[] for i in range(4)]
 
     for x in range(4):
         for i in start_bins[x]:
-            means[x].append(i.mean().numpy())
-            stds[x].append(i.std().numpy())
-            maxes[x].append(i.max().numpy())
-            entropies[x].append(entropy(i.numpy()))
+            start_means[x].append(i.mean().numpy())
+            start_stds[x].append(i.std().numpy())
+            start_maxes[x].append(i.max().numpy())
+            start_entropies[x].append(entropy(i.numpy()))
+    
+    for x in range(4):
+        for i in end_bins[x]:
+            end_means[x].append(i.mean().numpy())
+            end_stds[x].append(i.std().numpy())
+            end_maxes[x].append(i.max().numpy())
+            end_entropies[x].append(entropy(i.numpy()))
+
+    start_dir = os.path.join(args.results_dir, 'start')
+    end_dir = os.path.join(args.results_dir, 'end')
 
     try:
         os.mkdir(args.results_dir)
+        os.mkdir(start_dir)
+        os.mkdir(end_dir)
     except:
         raise Exception('Could not create results directory')
 
-    create_bins_viz(args.results_dir, means, 'means')
-    create_bins_viz(args.results_dir, stds, 'standard deviations')
-    create_bins_viz(args.results_dir, maxes, 'maximum probabilities')
-    create_bins_viz(args.results_dir, entropies, 'entropies')
+    create_bins_viz(start_dir, start_means, 'means')
+    create_bins_viz(start_dir, start_stds, 'standard deviations')
+    create_bins_viz(start_dir, start_maxes, 'maximum probabilities')
+    create_bins_viz(start_dir, start_entropies, 'entropies')
+
+    create_bins_viz(end_dir, end_means, 'means')
+    create_bins_viz(end_dir, end_stds, 'standard deviations')
+    create_bins_viz(end_dir, end_maxes, 'maximum probabilities')
+    create_bins_viz(end_dir, end_entropies, 'entropies')
 
 
 def run_psg_q_len_acc(args):
