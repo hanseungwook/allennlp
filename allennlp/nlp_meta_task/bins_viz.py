@@ -168,7 +168,7 @@ def run_psg_q_len_acc(args):
     plt.xlabel(args.len_class + ' Length')
     plt.ylabel('Prediction')
 
-    plt.savefig(os.path.join(args.results_dir, len_class + '_viz.png'))
+    plt.savefig(os.path.join(args.results_dir, args.len_class + '_viz.png'))
 
 
 if __name__ == "__main__":
