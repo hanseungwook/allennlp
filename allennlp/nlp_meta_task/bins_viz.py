@@ -117,6 +117,11 @@ def run_bins(args):
 
 
 def run_psg_q_len_acc(args, len_class = 'passage'):
+    try:
+        os.mkdir(args.results_dir)
+    except:
+        raise Exception('Could not create results directory')
+
     correct_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, CORRECT_META_FILE))
     incorrect_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, INCORRECT_META_FILE))
 
