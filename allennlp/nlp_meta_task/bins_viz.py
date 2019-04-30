@@ -166,7 +166,7 @@ def run_psg_q_len_acc(args, len_class = 'passage'):
     correct_len_acc_df.plot.scatter(x='Length', y='Prediction', c=correct_colors)
     incorrect_len_acc_df.plot.scatter(x='Length', y='Prediction', c=incorrect_colors)
 
-    plt.savefig(os.path.join(args.results_dir, len_class + '_viz.png')
+    plt.savefig(os.path.join(args.results_dir, len_class + '_viz.png'))
 
 
 if __name__ == "__main__":
