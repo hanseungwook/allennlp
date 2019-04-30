@@ -23,7 +23,7 @@ COLORS = cycle(['b', 'r', 'g', 'y'])
 
 
 def create_meta_labels(output_filepath):
-    outputs = outputs = torch.load(output_filepath, map_location='cpu')
+    outputs = torch.load(output_filepath, map_location='cpu')
 
     meta_labels = torch.tensor([])
     for batch_output in outputs:
