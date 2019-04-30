@@ -5,6 +5,7 @@ import argparse
 from scipy.stats import entropy
 from itertools import compress
 from itertools import cycle
+import numpy as np
 import pandas as pd
 import matplotlib as mpl
 mpl.use('Agg')
@@ -154,7 +155,13 @@ def run_psg_q_len_acc(args, len_class = 'passage'):
     correct_len_acc_df = pd.DataFrame.from_dict(correct_len_acc_dict)
     incorrect_len_acc_df = pd.DataFrame.from_dict(incorrect_len_acc_dict)
 
-    IPython.embed()
+    correct_colors = np.where(correct_len_acc_df['Prediction'] == 1, 'g', 'r')
+    incorrect_colors = np.where(incorrect_len_acc_df['Prediction'] == 0, 'g', 'r')
+    
+    correct_len_acc_df.plot.scatter(x='Length', y='Prediction', c=correct_colors)
+    incorrect_len_acc_df.plot.scatter(x='Length', y='Prediction', c=incorrect_colors)
+
+    plt.savefig(os.path.join(args.results_dir, len_class + '_viz.png')
 
 
 if __name__ == "__main__":
