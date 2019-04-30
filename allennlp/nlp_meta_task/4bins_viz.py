@@ -71,6 +71,7 @@ def preprocess_outputs(outputs):
 def create_viz(results_dir, y, data_name):
     global FIG_IDX
     plt.figure(FIG_IDX)
+    plt.subplot(1,1,1)
     plt.ylabel(data_name)
 
     for i in range(len(y)):
