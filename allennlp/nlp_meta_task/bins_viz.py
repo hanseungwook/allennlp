@@ -5,6 +5,7 @@ import argparse
 from scipy.stats import entropy
 from itertools import compress
 from itertools import cycle
+import pandas as pd
 import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib import pyplot as plt
@@ -68,7 +69,7 @@ def preprocess_outputs(outputs):
     return processed_outputs
 
 
-def create_viz(results_dir, y, data_name):
+def create_bins_viz(results_dir, y, data_name):
     global FIG_IDX
     plt.figure(FIG_IDX)
     
@@ -84,15 +85,7 @@ def create_viz(results_dir, y, data_name):
     plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
     FIG_IDX += 1
 
-
-if __name__ == "__main__":
-    # Parse arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--meta_outputs_dir", help="Relative path to model weights file")
-    parser.add_argument("--test_outputs_dir", help="Relative path to directory with intermediate/final outputs")
-    parser.add_argument("--results_dir", help="Relative path to directory for saving plots")
-    args = parser.parse_args()
-
+def run_bins(args):
     correct_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, CORRECT_META_FILE))
     incorrect_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, INCORRECT_META_FILE))
 
@@ -116,7 +109,62 @@ if __name__ == "__main__":
     except:
         raise Exception('Could not create results directory')
 
-    create_viz(args.results_dir, means, 'means')
-    create_viz(args.results_dir, stds, 'standard deviations')
-    create_viz(args.results_dir, maxes, 'maximum probabilities')
-    create_viz(args.results_dir, entropies, 'entropies')
+    create_bins_viz(args.results_dir, means, 'means')
+    create_bins_viz(args.results_dir, stds, 'standard deviations')
+    create_bins_viz(args.results_dir, maxes, 'maximum probabilities')
+    create_bins_viz(args.results_dir, entropies, 'entropies')
+
+
+def run_psg_q_len_acc(args, len_class = 'passage'):
+    correct_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, CORRECT_META_FILE))
+    incorrect_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, INCORRECT_META_FILE))
+
+    correct_outputs = torch.load(os.path.join(args.test_outputs_dir, CORRECT + LAYER_NAME), map_location='cpu')
+    incorrect_outputs = torch.load(os.path.join(args.test_outputs_dir, INCORRECT + LAYER_NAME), map_location='cpu')
+    
+    correct_len = []
+    incorrect_len = []
+
+    if len_class == 'passage':
+        for output in correct_outputs:
+            correct_len.append(len(output['passage_tokens'][0]))
+        
+        for output in incorrect_outputs:
+            incorrect_len.append(len(output['passage_tokens'][0]))
+    
+    elif len_class == 'question':
+        for output in correct_outputs:
+            correct_len.append(len(output['question_tokens'][0]))
+        
+        for output in incorrect_outputs:
+            incorrect_len.append(len(output['question_tokens'][0]))
+    
+    elif len_class == 'both':
+        for output in correct_outputs:
+            total_len = len(output['passage_tokens'][0]) + len(output['question_tokens'][0])
+            correct_len.append(total_len)
+        
+        for output in incorrect_outputs:
+            total_len = len(output['passage_tokens'][0]) + len(output['question_tokens'][0])
+            incorrect_len.append(total_len)
+    
+    correct_len_acc_dict = {'Length': correct_len, 'Prediction': correct_meta_labels}
+    incorrect_len_acc_dict = {'Length': incorrect_len, 'Prediction': incorrect_meta_labels}
+
+    correct_len_acc_df = pd.DataFrame.from_dict(correct_len_acc_dict)
+    incorrect_len_acc_df = pd.DataFrame.from_dict(incorrect_len_acc_dict)
+
+    IPython.embed()
+
+
+if __name__ == "__main__":
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--meta_outputs_dir", help="Relative path to meta outputs directory")
+    parser.add_argument("--test_outputs_dir", help="Relative path to directory with intermediate/final outputs")
+    parser.add_argument("--results_dir", help="Relative path to directory for saving plots")
+    args = parser.parse_args()
+    
+    #run_bins(args)
+    run_psg_q_len_acc(args, len_class='passage')
+
