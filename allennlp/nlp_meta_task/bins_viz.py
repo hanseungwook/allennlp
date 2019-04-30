@@ -163,8 +163,8 @@ def run_psg_q_len_acc(args, len_class = 'passage'):
     correct_colors = np.where(correct_len_acc_df['Prediction'] == 1, 'g', 'r')
     incorrect_colors = np.where(incorrect_len_acc_df['Prediction'] == 0, 'g', 'r')
     
-    correct_len_acc_df.plot.scatter(x='Length', y='Prediction', c=correct_colors)
-    incorrect_len_acc_df.plot.scatter(x='Length', y='Prediction', c=incorrect_colors)
+    plt.scatter(correct_len_acc_df['Length'], correct_len_acc_df['Prediction'], c=correct_colors)
+    plt.scatter(incorrect_len_acc_df['Length'], incorrect_len_acc_df['Prediction'], c=incorrect_colors)
 
     plt.savefig(os.path.join(args.results_dir, len_class + '_viz.png'))
 
