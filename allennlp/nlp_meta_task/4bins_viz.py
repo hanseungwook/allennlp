@@ -71,14 +71,16 @@ def preprocess_outputs(outputs):
 def create_viz(results_dir, y, data_name):
     global FIG_IDX
     plt.figure(FIG_IDX)
-    plt.subplot(1,1,1)
-    plt.ylabel(data_name)
+    
 
     for i in range(len(y)):
         plt.subplot(1, 4, i+1)
         plt.scatter(list(range(len(y[i]))), y[i], color=next(COLORS), s=1)
         plt.xlabel(BIN_NAMES[i])
-        
+
+        if i == 0:
+            plt.ylabel(data_name)
+
     plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
     FIG_IDX += 1
 
