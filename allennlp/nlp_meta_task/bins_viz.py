@@ -19,7 +19,7 @@ INCORRECT_META_FILE = 'meta_incorrect_outputs.torch'
 LAYER_NAME = 'outputs.torch'
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
-BIN_NAMES = ['b_correct_m_correct', 'b_correct_m_incorrect', 'b_incorrect_m_correct', 'b_incorrect_m_incorrect']
+BIN_NAMES = ['Base Correct Meta Correct', 'Base Correct', 'b_incorrect_m_correct', 'b_incorrect_m_incorrect']
 FIG_IDX = 0
 COLORS = cycle(['b', 'r', 'g', 'y'])
 
@@ -83,8 +83,21 @@ def create_bins_viz(results_dir, y, data_name):
         if i == 0:
             plt.ylabel(data_name)
 
+    plt.tight_layout()
     plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
     FIG_IDX += 1
+
+def create_bins_viz_sep(results_dir, y, xlabel, yabel):
+    global FIG_IDX
+    plt.figure(FIG_IDX)
+
+    plt.scatter(list(range(len(y)), y, color=next(COLORS), s=1))
+    
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
+    FIG_IDX += 1 
 
 def run_bins(args):
     correct_meta_labels = create_meta_labels(os.path.join(args.meta_outputs_dir, CORRECT_META_FILE))
@@ -202,6 +215,6 @@ if __name__ == "__main__":
     parser.add_argument("--len_class", default="passage", help="Length class (passage, question, both)")
     args = parser.parse_args()
     
-    #run_bins(args)
-    run_psg_q_len_acc(args)
+    run_bins(args)
+    #run_psg_q_len_acc(args)
 
