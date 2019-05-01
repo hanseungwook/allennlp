@@ -19,7 +19,7 @@ INCORRECT_META_FILE = 'meta_incorrect_outputs.torch'
 LAYER_NAME = 'outputs.torch'
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
-BIN_NAMES = ['Base Correct Meta Correct', 'Base Correct', 'b_incorrect_m_correct', 'b_incorrect_m_incorrect']
+BIN_NAMES = ['Base Correct\nMeta Correct', 'Base Correct\nMeta Incorrect', 'Base Incorrect\nMeta Incorrect', 'Base Incorrect\nMeta Correct']
 FIG_IDX = 0
 COLORS = cycle(['b', 'r', 'g', 'y'])
 
@@ -55,7 +55,7 @@ def construct_4_bins(test_outputs_dir, side, correct_meta_labels, incorrect_meta
     incor_cor = preprocess_outputs([x[LAYER] for x in list(compress(incorrect_outputs, [not i for i in incorrect_meta_labels]))])
     incor_incor = preprocess_outputs([x[LAYER] for x in list(compress(incorrect_outputs, incorrect_meta_labels))])
 
-    bins = [cor_cor, cor_incor, incor_cor, incor_incor]
+    bins = [cor_cor, cor_incor, incor_incor, incor_cor]
 
     return bins
 
@@ -87,7 +87,7 @@ def create_bins_viz(results_dir, y, data_name):
     plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
     FIG_IDX += 1
 
-def create_bins_viz_sep(results_dir, y, xlabel, yabel):
+def create_bins_viz_sep(results_dir, y, xlabel, ylabel):
     global FIG_IDX
     plt.figure(FIG_IDX)
 
@@ -96,7 +96,7 @@ def create_bins_viz_sep(results_dir, y, xlabel, yabel):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
 
-    plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
+    #plt.savefig(os.path.join(results_dir, data_name + '_' + BIN_NAMES[i] + '.png'))
     FIG_IDX += 1 
 
 def run_bins(args):
