@@ -189,19 +189,19 @@ def run_psg_q_len_acc(args):
             total_len = len(output['passage_tokens'][0]) + len(output['question_tokens'][0])
             incorrect_len.append(total_len)
     
-    correct_len_acc_dict = {'Length': correct_len, 'Prediction': correct_meta_labels}
-    incorrect_len_acc_dict = {'Length': incorrect_len, 'Prediction': incorrect_meta_labels}
+    correct_len_acc_dict = {'Length': correct_len, 'Prediction': correct_meta_labels, 'Base Network Prediction': [1] * len(correct_len)}
+    incorrect_len_acc_dict = {'Length': incorrect_len, 'Prediction': incorrect_meta_labels, 'Base Network Prediction': [0] * len(correct_len)}
 
     correct_len_acc_df = pd.DataFrame.from_dict(correct_len_acc_dict)
     incorrect_len_acc_df = pd.DataFrame.from_dict(incorrect_len_acc_dict)
 
-    correct_colors = np.where(correct_len_acc_df['Prediction'] == 1, 'g', 'r')
-    incorrect_colors = np.where(incorrect_len_acc_df['Prediction'] == 0, 'g', 'r')
+    #correct_colors = np.where(correct_len_acc_df['Prediction'] == 1, 'g', 'r')
+    #incorrect_colors = np.where(incorrect_len_acc_df['Prediction'] == 0, 'g', 'r')
     
-    plt.scatter(correct_len_acc_df['Length'], correct_len_acc_df['Prediction'], c=correct_colors, s=1)
-    plt.scatter(incorrect_len_acc_df['Length'], incorrect_len_acc_df['Prediction'], c=incorrect_colors, s=1)
+    plt.scatter(correct_len_acc_df['Length'], correct_len_acc_df['Base Network Prediction'], c='g', s=1)
+    plt.scatter(incorrect_len_acc_df['Length'], incorrect_len_acc_df['Base Network Prediction'], c='r', s=1)
     plt.xlabel(args.len_class + ' Length')
-    plt.ylabel('Prediction')
+    plt.ylabel('Base Network Prediction')
 
     plt.savefig(os.path.join(args.results_dir, args.len_class + '_viz.png'))
 
