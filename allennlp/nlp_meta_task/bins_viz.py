@@ -190,7 +190,7 @@ def run_psg_q_len_acc(args):
             incorrect_len.append(total_len)
     
     correct_len_acc_dict = {'Length': correct_len, 'Prediction': correct_meta_labels, 'Base Network Prediction': [1] * len(correct_len)}
-    incorrect_len_acc_dict = {'Length': incorrect_len, 'Prediction': incorrect_meta_labels, 'Base Network Prediction': [0] * len(correct_len)}
+    incorrect_len_acc_dict = {'Length': incorrect_len, 'Prediction': incorrect_meta_labels, 'Base Network Prediction': [0] * len(incorrect_len)}
 
     correct_len_acc_df = pd.DataFrame.from_dict(correct_len_acc_dict)
     incorrect_len_acc_df = pd.DataFrame.from_dict(incorrect_len_acc_dict)
