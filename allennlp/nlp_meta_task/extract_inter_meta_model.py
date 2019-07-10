@@ -66,6 +66,7 @@ if __name__ == "__main__":
 
     # Set cuda device, if available or set
     device = torch.device(args.cuda)
+    model = model.cuda()
 
     logger.info('Attaching hooks')
     # Attaching hook to output of every FC
