@@ -58,16 +58,16 @@ if __name__ == "__main__":
     parser.add_argument("--cuda", help="CUDA device #",type=int, default=-1)
     args = parser.parse_args()
 
+    logger.info('Loading model')
     # Load model and dataset reader
     model = FCMetaNet1(DIM_SIZE)
     meta_saved_state = torch.load(args.saved_meta_model)
     model.load_state_dict(meta_saved_state)
 
-    dataset_reader = load_dataset_reader(args.serialization_dir)
-
     # Set cuda device, if available or set
     device = torch.device(args.cuda)
 
+    logger.info('Attaching hooks')
     # Attaching hook to output of every FC
     layer_list = list(model.children())
     layer_list[0].register_forward_hook(fc1_hook)
@@ -81,6 +81,7 @@ if __name__ == "__main__":
     # Set model to evaluation mode
     model.eval()
 
+    logger.info('Creating dataset and loader')
     # Creating dataset and loader
     correct_files = []
     incorrect_files = []
@@ -108,6 +109,7 @@ if __name__ == "__main__":
         fc6_outputs = []
         fc7_outputs = []
         
+        logger.info('Evaluating dataset with model')
         for batch_idx, (data, target) in enumerate(dataset_loader):
             # Evaluate through model
             data = data.to(device)
