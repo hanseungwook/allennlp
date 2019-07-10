@@ -2,7 +2,7 @@ import torch
 import argparse
 import os
 import logging
-from extract_inter_base_model_batch import CONFIG_NAME, DEFAULT_PREDICTORS, compute_metrics, load_model, load_dataset_reader, move_input_to_device
+from extract_inter_base_model_batch import load_model, load_dataset_reader, move_input_to_device
 from meta_model import FCMetaNet1
 import IPython
 from nlp_meta_pipeline import IntermediateLayersInMemoryDataset
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     incorrect_files.append(args.val_filepath + INCORRECT + LAYER)
 
     dataset = IntermediateLayersInMemoryDataset(correct_files=correct_files, incorrect_files=incorrect_files)
-    dataset_loader = torch.utils.data.DataLoader(incorrect_valid_loader = torch.utils.data.DataLoader(dataset, args.batch_size, shuffle=False))
+    dataset_loader = torch.utils.data.DataLoader(dataset, args.batch_size, shuffle=False))
 
     # Creating directory for outputs 
     dir_name = args.output_dir
