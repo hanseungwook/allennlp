@@ -86,7 +86,7 @@ if __name__ == "__main__":
     correct_files = []
     incorrect_files = []
     correct_files.append(args.val_filepath + CORRECT + LAYER)
-    incorrect_files.append(args.training_dir + INCORRECT + LAYER)
+    incorrect_files.append(args.val_filepath + INCORRECT + LAYER)
 
     dataset = IntermediateLayersInMemoryDataset(correct_files=correct_files, incorrect_files=incorrect_files)
     dataset_loader = torch.utils.data.DataLoader(incorrect_valid_loader = torch.utils.data.DataLoader(dataset, args.batch_size, shuffle=False))
