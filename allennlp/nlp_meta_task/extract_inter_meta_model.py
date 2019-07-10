@@ -117,8 +117,6 @@ if __name__ == "__main__":
             target = target.to(device)
             output = model(data) 
 
-            IPython.embed()
-
             # Transferring tensors back to CPU
             fc1_output[0] = fc1_output[0].cpu()
             fc2_output[0] = fc2_output[0].cpu()
