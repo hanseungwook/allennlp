@@ -120,22 +120,22 @@ if __name__ == "__main__":
             IPython.embed()
 
             # Transferring tensors back to CPU
-            fc1_outputs = [output.cpu() for output in fc1_output]
-            fc2_outputs = [output.cpu() for output in fc2_output]
-            fc3_outputs = [output.cpu() for output in fc3_output]
-            fc4_outputs = [output.cpu() for output in fc4_output]
-            fc5_outputs = [output.cpu() for output in fc5_output]
-            fc6_outputs = [output.cpu() for output in fc6_output]
-            fc7_outputs = [output.cpu() for output in fc7_output]
+            fc1_output[0] = fc1_output[0].cpu()
+            fc2_output[0] = fc2_output[0].cpu()
+            fc3_output[0] = fc3_output[0].cpu()
+            fc4_output[0] = fc4_output[0].cpu()
+            fc5_output[0] = fc5_output[0].cpu()
+            fc6_output[0] = fc6_output[0].cpu()
+            fc7_output[0] = fc7_output[0].cpu()
 
             # Save intermediate outputs
-            fc1_outputs.extend(fc1_output)
-            fc2_outputs.extend(fc2_output)
-            fc3_outputs.extend(fc3_output)
-            fc4_outputs.extend(fc4_output)
-            fc5_outputs.extend(fc5_output)
-            fc6_outputs.extend(fc6_output)
-            fc7_outputs.extend(fc7_output)
+            fc1_outputs.extend(fc1_output[0])
+            fc2_outputs.extend(fc2_output[0])
+            fc3_outputs.extend(fc3_output[0])
+            fc4_outputs.extend(fc4_output[0])
+            fc5_outputs.extend(fc5_output[0])
+            fc6_outputs.extend(fc6_output[0])
+            fc7_outputs.extend(fc7_output[0])
 
             fc1_output.clear()
             fc2_output.clear()
