@@ -56,7 +56,7 @@ class IntermediateLayersInMemoryDataset(Dataset):
         self.X_data = []
         #self.dim_size = 0
         self.data_class = None
-        self.max_dim = 0
+        self.max_dim = max_dim
 
         # Defining and setting up for respective class of dataset
         if not one_class:
