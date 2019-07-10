@@ -42,7 +42,7 @@ LOGGER.setLevel(logging.INFO)
 class IntermediateLayersInMemoryDataset(Dataset):
     def __init__(self, correct_files=None, correct_start_files=None, correct_end_files=None, 
                  incorrect_files=None, input_files=None, cor_percentage = 1.0, incor_percentage = 1.0,
-                 one_class = False, attention=None, max_dim=0, transform=None):
+                 one_class = 'both', attention=None, max_dim=0, transform=None):
         self.correct_running_count = 0
         self.correct_start_running_count = 0
         self.correct_end_running_count = 0
