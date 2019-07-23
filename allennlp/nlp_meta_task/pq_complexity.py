@@ -98,14 +98,22 @@ if __name__ == "__main__":
     parser.add_argument("--meta_outputs_dir", help="Relative path to meta outputs directory")
     parser.add_argument("--test_outputs_dir", help="Relative path to directory with intermediate/final outputs")
     parser.add_argument("--results_dir", help="Relative path to directory for saving plots")
-    parser.add_argument("--class", help="question / passage / both (complexity)")
+    parser.add_argument("--cmplx_class", help="question / passage / both (complexity)")
     args = parser.parse_args()
+
+    try:
+        os.mkdir(args.results_dir)
+    except:
+        raise Exception('Could not create results directory')
     
-    if args.class == 'passage':
+    if args.cmplx_class == 'passage':
         correct_df, incorrect_df = p_complexity(args)
-    elif args.class == 'question':
+    elif args.cmplx_class == 'question':
         correct_df, incorrect_df = q_complexity(args)
     else:
         correct_df, incorrect_df = p_q_complexity(args)
     
     IPython.embed()
+
+    correct_df.to_csv(os.path.join(args.results_dir, args.cmplx_class + '_correct_cmplx.csv'))
+    incorrect_df.to_csv(os.path.join(args.results_dir, args.cmplx_class + '_incorrect_cmplx.csv'))
