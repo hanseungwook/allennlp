@@ -5,6 +5,7 @@ import textacy
 import pandas as pd
 from textacy.text_stats import TextStats
 from bins_viz import create_meta_labels
+import IPython
 
 
 # Global Parameters
@@ -101,8 +102,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.class == 'passage':
-        print(p_complexity(args))
+        correct_df, incorrect_df = p_complexity(args)
     elif args.class == 'question':
-        print(q_complexity(args))
+        correct_df, incorrect_df = q_complexity(args)
     else:
-        print(p_q_complexity(args))
+        correct_df, incorrect_df = p_q_complexity(args)
+    
+    IPython.embed()
