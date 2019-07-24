@@ -7,7 +7,7 @@ from textacy.text_stats import TextStats
 from bins_viz import create_meta_labels
 import nltk
 import IPython
-
+import progressbar
 
 # Global Parameters
 CORRECT_META_FILE = 'meta_correct_outputs.torch'
@@ -28,7 +28,7 @@ def p_complexity(args):
     correct_cmplx = []
     incorrect_cmplx = []
 
-    for output in correct_outputs:
+    for output in progressbar.progressbar(correct_outputs):
         psg = output['metadata'][0]['original_passage']
         psg = " ".join(w for w in nltk.wordpunct_tokenize(psg) if w.lower() in WORDS or not w.isalpha())
         try:
@@ -39,7 +39,7 @@ def p_complexity(args):
             cur_cmplx = 0
         correct_cmplx.append(cur_cmplx)
     
-    for output in incorrect_outputs:
+    for output in progressbar.progressbar(incorrect_outputs):
         psg = output['metadata'][0]['original_passage']
         try:
             doc = textacy.make_spacy_doc(psg)
