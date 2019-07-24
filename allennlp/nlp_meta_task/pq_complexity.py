@@ -7,7 +7,6 @@ from textacy.text_stats import TextStats
 from bins_viz import create_meta_labels
 import nltk
 import IPython
-import re
 
 
 # Global Parameters
@@ -31,18 +30,23 @@ def p_complexity(args):
 
     for output in correct_outputs:
         psg = output['metadata'][0]['original_passage']
-        psg = re.sub(r'[^\w]', '', psg)
-        doc = textacy.make_spacy_doc(psg)
-        ts = TextStats(doc)
-        cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        psg = " ".join(w for w in nltk.wordpunct_tokenize(psg) if w.lower() in WORDS or not w.isalpha())
+        try:
+            doc = textacy.make_spacy_doc(psg)
+            ts = TextStats(doc)
+            cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        except:
+            cur_cmplx = 0
         correct_cmplx.append(cur_cmplx)
     
     for output in incorrect_outputs:
         psg = output['metadata'][0]['original_passage']
-        psg = re.sub(r'[^\w]', '', psg)
-        doc = textacy.make_spacy_doc(psg)
-        ts = TextStats(doc)
-        cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        try:
+            doc = textacy.make_spacy_doc(psg)
+            ts = TextStats(doc)
+            cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        except:
+            cur_cmplx = 0
         incorrect_cmplx.append(cur_cmplx)
     
     correct_cmplx_dict = {'Complexity': correct_cmplx, 'Meta Prediction': correct_meta_labels, 'Base Network Prediction': [1] * len(correct_cmplx)}
