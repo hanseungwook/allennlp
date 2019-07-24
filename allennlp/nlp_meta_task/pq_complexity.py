@@ -70,16 +70,22 @@ def q_complexity(args):
 
     for output in correct_outputs:
         q = ' '.join(output['metadata'][0]['question_tokens'])
-        doc = textacy.make_spacy_doc(q)
-        ts = TextStats(doc)
-        cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        try:
+            doc = textacy.make_spacy_doc(q)
+            ts = TextStats(doc)
+            cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        except:
+            cur_cmplx = 0
         correct_cmplx.append(cur_cmplx)
     
     for output in incorrect_outputs:
         q = ' '.join(output['metadata'][0]['question_tokens'])
-        doc = textacy.make_spacy_doc(q)
-        ts = TextStats(doc)
-        cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        try:
+            doc = textacy.make_spacy_doc(q)
+            ts = TextStats(doc)
+            cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
+        except:
+            cur_cmplx = 0
         incorrect_cmplx.append(cur_cmplx)
     
     correct_cmplx_dict = {'Complexity': correct_cmplx, 'Meta Prediction': correct_meta_labels, 'Base Network Prediction': [1] * len(correct_cmplx)}
@@ -121,8 +127,6 @@ if __name__ == "__main__":
         correct_df, incorrect_df = q_complexity(args)
     else:
         correct_df, incorrect_df = p_q_complexity(args)
-    
-    IPython.embed()
 
     correct_df.to_csv(os.path.join(args.results_dir, args.cmplx_class + '_correct_cmplx.csv'))
     incorrect_df.to_csv(os.path.join(args.results_dir, args.cmplx_class + '_incorrect_cmplx.csv'))
