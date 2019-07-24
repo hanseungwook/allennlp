@@ -5,6 +5,7 @@ import textacy
 import pandas as pd
 from textacy.text_stats import TextStats
 from bins_viz import create_meta_labels
+import nltk
 import IPython
 
 
@@ -14,6 +15,7 @@ INCORRECT_META_FILE = 'meta_incorrect_outputs.torch'
 LAYER_NAME = 'inputs.torch'
 CORRECT = 'correct_'
 INCORRECT = 'incorrect_'
+WORDS = set(nltk.corpus.words.words())
 
 
 def p_complexity(args):
@@ -28,6 +30,7 @@ def p_complexity(args):
 
     for output in correct_outputs:
         psg = output['metadata'][0]['original_passage']
+        psg = " ".join(w for w in nltk.wordpunct_tokenize(psg) if w.lower() in words or not w.isalpha())
         doc = textacy.make_spacy_doc(psg)
         ts = TextStats(doc)
         cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
@@ -35,6 +38,7 @@ def p_complexity(args):
     
     for output in incorrect_outputs:
         psg = output['metadata'][0]['original_passage']
+        psg = " ".join(w for w in nltk.wordpunct_tokenize(psg) if w.lower() in words or not w.isalpha())
         doc = textacy.make_spacy_doc(psg)
         ts = TextStats(doc)
         cur_cmplx = ts.readability_stats['flesch_kincaid_grade_level']
