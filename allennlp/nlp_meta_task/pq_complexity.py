@@ -68,7 +68,7 @@ def q_complexity(args):
     correct_cmplx = []
     incorrect_cmplx = []
 
-    for output in correct_outputs:
+    for output in progressbar.progressbar(correct_outputs):
         q = ' '.join(output['metadata'][0]['question_tokens'])
         try:
             doc = textacy.make_spacy_doc(q)
@@ -78,7 +78,7 @@ def q_complexity(args):
             cur_cmplx = 0
         correct_cmplx.append(cur_cmplx)
     
-    for output in incorrect_outputs:
+    for output in progressbar.progressbar(incorrect_outputs):
         q = ' '.join(output['metadata'][0]['question_tokens'])
         try:
             doc = textacy.make_spacy_doc(q)
